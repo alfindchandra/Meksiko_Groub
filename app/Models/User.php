@@ -62,6 +62,15 @@ class User extends Authenticatable
         return $this->role->isKepalaRuko();
     }
 
+    public function isAuditor(): bool
+    {
+        return $this->role->isAuditor();
+    }
+    public function isPegadaian(): bool
+{
+    return $this->role->isPegadaian();
+}
+
     public function canAccessOutlet(int $outletId): bool
     {
         return $this->isAdminPusat() || $this->outlet_id === $outletId;

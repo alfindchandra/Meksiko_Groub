@@ -2,56 +2,70 @@
 
 namespace App\Livewire\Transfer;
 
-use App\Models\Outlet;
-use App\Models\Product;
-use App\Models\Stock;
 use App\Models\StockTransfer;
 use App\Models\TransferItem;
+use App\Models\Product;
+use App\Models\Outlet;
+use App\Models\Stock;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
 class CreateTransfer extends Component
 {
-    public $fromOutletId;
-    public $toOutletId;
+    public $fromOutletId = '';
+    public $toOutletId = '';
     public $notes = '';
-    public $items = [];
+    
     public $searchProduct = '';
     public $showProductSearch = false;
     public $availableProducts = [];
+    public $selectedProducts = [];
 
     protected $rules = [
-        'fromOutletId' => 'required|exists:outlets,id|different:toOutletId',
-        'toOutletId' => 'required|exists:outlets,id',
-        'items.*.product_id' => 'required|exists:products,id',
-        'items.*.quantity' => 'required|integer|min:1',
+        'fromOutletId' => 'required|exists:outlets,id',
+        'toOutletId' => 'required|exists:outlets,id|different:fromOutletId',
         'notes' => 'nullable|string|max:500',
+        'selectedProducts.*.quantity' => 'required|integer|min:1',
     ];
 
     protected $messages = [
-        'fromOutletId.required' => 'Pilih outlet pengirim',
-        'fromOutletId.different' => 'Outlet pengirim dan penerima harus berbeda',
-        'toOutletId.required' => 'Pilih outlet penerima',
-        'items.*.product_id.required' => 'Pilih produk',
-        'items.*.quantity.required' => 'Masukkan jumlah',
-        'items.*.quantity.min' => 'Jumlah minimal 1',
+        'fromOutletId.required' => 'Pilih outlet asal',
+        'toOutletId.required' => 'Pilih outlet tujuan',
+        'toOutletId.different' => 'Outlet tujuan harus berbeda dengan outlet asal',
+        'selectedProducts.*.quantity.required' => 'Jumlah wajib diisi',
+        'selectedProducts.*.quantity.min' => 'Jumlah minimal 1',
     ];
 
     public function mount()
     {
-        // Set default from outlet based on user
+        // KEPALA RUKO: Hanya bisa request dari warehouse
         if (auth()->user()->isKepalaRuko()) {
-            $this->fromOutletId = auth()->user()->outlet_id;
+            $warehouse = Outlet::where('type', 'warehouse')->first();
+            $this->fromOutletId = $warehouse?->id ?? '';
+            $this->toOutletId = auth()->user()->outlet_id;
         }
     }
 
     public function updatedSearchProduct()
     {
+        if (!$this->fromOutletId) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => 'Pilih outlet asal terlebih dahulu'
+            ]);
+            return;
+        }
+
         if (strlen($this->searchProduct) >= 2) {
-            $this->availableProducts = Product::where('name', 'like', '%' . $this->searchProduct . '%')
-                ->orWhere('sku', 'like', '%' . $this->searchProduct . '%')
+            $this->availableProducts = Product::where('is_active', true)
+                ->where(function($q) {
+                    $q->where('name', 'like', '%' . $this->searchProduct . '%')
+                      ->orWhere('sku', 'like', '%' . $this->searchProduct . '%');
+                })
                 ->limit(10)
-                ->get();
+                ->get()
+                ->toArray();
+
             $this->showProductSearch = true;
         } else {
             $this->availableProducts = [];
@@ -61,55 +75,86 @@ class CreateTransfer extends Component
 
     public function addProduct($productId)
     {
-        $product = Product::find($productId);
-        
-        // Check if product already added
-        $exists = collect($this->items)->contains('product_id', $productId);
-        
-        if (!$exists && $product) {
-            // Get available stock from selected outlet
-            $stock = Stock::where('product_id', $productId)
-                ->where('outlet_id', $this->fromOutletId)
-                ->first();
-
-            $this->items[] = [
-                'product_id' => $product->id,
-                'product_name' => $product->name,
-                'product_sku' => $product->sku,
-                'quantity' => 1,
-                'available_stock' => $stock ? $stock->available : 0,
-                'unit' => $product->unit,
-            ];
+        if (!$this->fromOutletId) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => 'Pilih outlet asal terlebih dahulu'
+            ]);
+            return;
         }
+
+        // Check if already added
+        foreach ($this->selectedProducts as $p) {
+            if ((int)$p['product_id'] === $productId) {
+                $this->dispatch('notify', [
+                    'type' => 'warning',
+                    'message' => 'Produk sudah ada dalam daftar'
+                ]);
+                $this->searchProduct = '';
+                $this->showProductSearch = false;
+                return;
+            }
+        }
+
+        $product = Product::find($productId);
+        if (!$product) return;
+
+        // Get available stock from source outlet
+        $stock = Stock::where('product_id', $productId)
+            ->where('outlet_id', $this->fromOutletId)
+            ->first();
+
+        $availableStock = $stock ? $stock->available : 0;
+
+        $this->selectedProducts[] = [
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'product_sku' => $product->sku,
+            'unit' => $product->unit,
+            'available_stock' => $availableStock,
+            'quantity' => 1,
+        ];
 
         $this->searchProduct = '';
         $this->showProductSearch = false;
         $this->availableProducts = [];
     }
 
-    public function removeItem($index)
+    public function removeProduct($index)
     {
-        unset($this->items[$index]);
-        $this->items = array_values($this->items);
+        unset($this->selectedProducts[$index]);
+        $this->selectedProducts = array_values($this->selectedProducts);
     }
 
-    public function updateQuantity($index, $quantity)
+    public function updatedFromOutletId()
     {
-        if (isset($this->items[$index])) {
-            $this->items[$index]['quantity'] = max(1, (int)$quantity);
-        }
+        // Reset selected products when changing source
+        $this->selectedProducts = [];
     }
 
     public function submit()
     {
         $this->validate();
 
-        if (empty($this->items)) {
+        if (empty($this->selectedProducts)) {
             $this->dispatch('notify', [
                 'type' => 'error',
-                'message' => 'Tambahkan minimal 1 produk untuk transfer'
+                'message' => 'Tambahkan minimal 1 produk untuk ditransfer'
             ]);
             return;
+        }
+
+        // Validate stock availability
+        foreach ($this->selectedProducts as $index => $item) {
+            if ($item['quantity'] > $item['available_stock']) {
+                $this->addError("selectedProducts.{$index}.quantity",
+                    "Stok tidak cukup. Tersedia: {$item['available_stock']}");
+                $this->dispatch('notify', [
+                    'type' => 'error',
+                    'message' => "Stok {$item['product_name']} tidak mencukupi"
+                ]);
+                return;
+            }
         }
 
         try {
@@ -118,9 +163,7 @@ class CreateTransfer extends Component
             // Generate transfer number
             $transferNumber = 'TRF-' . date('Ymd') . '-' . str_pad(
                 StockTransfer::whereDate('created_at', today())->count() + 1,
-                3,
-                '0',
-                STR_PAD_LEFT
+                3, '0', STR_PAD_LEFT
             );
 
             // Create transfer
@@ -134,17 +177,7 @@ class CreateTransfer extends Component
             ]);
 
             // Create transfer items and reserve stock
-            foreach ($this->items as $item) {
-                // Validate stock availability
-                $stock = Stock::where('product_id', $item['product_id'])
-                    ->where('outlet_id', $this->fromOutletId)
-                    ->first();
-
-                if (!$stock || $stock->available < $item['quantity']) {
-                    throw new \Exception("Stok tidak mencukupi untuk produk: {$item['product_name']}");
-                }
-
-                // Create transfer item
+            foreach ($this->selectedProducts as $item) {
                 TransferItem::create([
                     'stock_transfer_id' => $transfer->id,
                     'product_id' => $item['product_id'],
@@ -152,21 +185,27 @@ class CreateTransfer extends Component
                 ]);
 
                 // Reserve stock
-                $stock->reserve($item['quantity']);
+                $stock = Stock::where('product_id', $item['product_id'])
+                    ->where('outlet_id', $this->fromOutletId)
+                    ->first();
+
+                if ($stock) {
+                    $stock->reserve($item['quantity']);
+                }
             }
 
             DB::commit();
 
             $this->dispatch('notify', [
                 'type' => 'success',
-                'message' => "Transfer {$transferNumber} berhasil dibuat!"
+                'message' => "Transfer {$transferNumber} berhasil dibuat dan menunggu persetujuan!"
             ]);
 
             return redirect()->route('transfer.detail', $transfer->id);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             $this->dispatch('notify', [
                 'type' => 'error',
                 'message' => 'Gagal membuat transfer: ' . $e->getMessage()
@@ -174,17 +213,29 @@ class CreateTransfer extends Component
         }
     }
 
-    public function render()
-    {
-        $outlets = Outlet::active()->get();
-        
-        // If user is kepala ruko, only show other outlets as destination
-        if (auth()->user()->isKepalaRuko()) {
-            $outlets = $outlets->where('id', '!=', auth()->user()->outlet_id);
-        }
+   public function render()
+{
+    $allOutlets = Outlet::where('is_active', true)->get();
+    $fromOutlets = collect();
+    $toOutlets = collect();
 
-        return view('livewire.transfer.create-transfer', [
-            'outlets' => $outlets,
-        ])->layout('layouts.app');
+    if (auth()->user()->isAdminPusat()) {
+        // Admin bisa pilih semua, tapi difilter agar tidak bisa memilih outlet yang sama
+        $fromOutlets = $allOutlets->where('id', '!=', $this->toOutletId);
+        $toOutlets = $allOutlets->where('id', '!=', $this->fromOutletId);
+        
+    } elseif (auth()->user()->isKepalaRuko()) {
+        // Kepala Ruko: Dari Gudang ke Outlet milik sendiri
+        $fromOutlets = $allOutlets->where('type', 'warehouse')
+                                  ->where('id', '!=', $this->toOutletId);
+                                  
+        $toOutlets = $allOutlets->where('id', auth()->user()->outlet_id)
+                                ->where('id', '!=', $this->fromOutletId);
     }
+
+    return view('livewire.transfer.create-transfer', [
+        'fromOutlets' => $fromOutlets,
+        'toOutlets' => $toOutlets,
+    ])->layout('layouts.app');
+}
 }

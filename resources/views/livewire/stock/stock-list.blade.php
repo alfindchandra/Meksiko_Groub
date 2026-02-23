@@ -21,7 +21,7 @@
                     </div>
                 </div>
 
-                @can('access-all-outlets')
+                
                 <div class="md:col-span-3">
                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5 ml-1">Outlet</label>
                     <select wire:model.live="selectedOutlet" class="w-full bg-white border-gray-200 rounded-xl text-sm py-2.5 focus:ring-primary-500 focus:border-primary-500 shadow-sm">
@@ -31,7 +31,7 @@
                         @endforeach
                     </select>
                 </div>
-                @endcan
+                
 
                 <div class="md:col-span-3">
                     <label class="block text-xs font-semibold text-gray-500 uppercase mb-1.5 ml-1">Kategori</label>

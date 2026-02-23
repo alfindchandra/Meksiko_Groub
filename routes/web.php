@@ -12,7 +12,16 @@ use App\Livewire\Transfer\ApproveTransfer;
 use App\Livewire\Transfer\ReceiveTransfer;
 use App\Livewire\Shipment\ShipmentList;
 use App\Livewire\Audit\AuditList;
+use App\livewire\Pegadaian\PegadaianDashboard;
+use App\Livewire\Sales\SalesList;
+use App\Livewire\Admin\Reports;
+use App\Livewire\Auditor\AuditorDashboard;
 use App\Livewire\Audit\CreateAudit;
+use App\Livewire\Pos\PointOfSale;
+use App\Livewire\Pegadaian\PawnList;
+use App\Livewire\Pegadaian\CreatePawn;
+use App\Livewire\Pegadaian\PawnDetail;
+use App\Livewire\Admin\GoodsReceipt;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,22 +30,55 @@ Route::get('/', function () {
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+        Route::get('/pos', PointOfSale::class)->name('pos');
+    Route::get('/pos/receipt/{sale}', function($id) {
+        return view('pos.receipt', ['saleId' => $id]);
+    })->name('pos.receipt');
+    Route::middleware(['auth', 'can:manage-users'])->group(function () {
+    Route::get('/admin/goods-receipt', GoodsReceipt::class)->name('admin.goods-receipt');
+});
     
+
+        //pegadaian 
+        Route::get('/pegadaian/dashboard', PegadaianDashboard::class)->name('pegadaian.dashboard');
+        Route::get('/pegadaian', PawnList::class)->name('pegadaian.list');
+        Route::get('/pegadaian/create', CreatePawn::class)->name('pegadaian.create');
+        Route::get('/pegadaian/{pawnId}', PawnDetail::class)->name('pegadaian.detail');
+        Route::get('/pegadaian/{pawnId}/receipt', function($pawnId) {
+        return view('pegadaian.receipt', ['pawnId' => $pawnId]);
+        })->name('pegadaian.receipt');
+
+
     // Dashboard Routes
-    Route::get('/dashboard', function () {
-        if (auth()->user()->isAdminPusat()) {
-            return redirect()->route('admin.dashboard');
-        } else {
-            return redirect()->route('outlet.dashboard');
-        }
-    })->name('dashboard');
+ Route::get('/dashboard', function () {
+    $user = auth()->user();
+
+    if ($user->isAdminPusat()) {
+        return redirect()->route('admin.dashboard');
+    } 
+
+    if ($user->isAuditor()) {
+        return redirect()->route('auditor.dashboard');
+    }
+
+    // Default jika bukan Admin atau Auditor (misal: Outlet)
+    return redirect()->route('outlet.dashboard');
+})->name('dashboard');
+
+// Route untuk Auditor yang Anda sebutkan di atas
+Route::get('/auditor/dashboard', AuditorDashboard::class)
+    ->name('auditor.dashboard');
 
     Route::get('/notifications', [DashboardController::class, 'adminNotifications'])
         ->name('notifications.all');
+    Route::get('/sales', SalesList::class)->name('sales.list');
 
     Route::get('/admin/dashboard', AdminDashboard::class)
         ->middleware('can:access-all-outlets')
         ->name('admin.dashboard');
+
+    Route::get('/admin/reports', Reports::class)->name('admin.reports');
+
 
     Route::get('/outlet/dashboard', OutletDashboard::class)
         ->name('outlet.dashboard');

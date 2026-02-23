@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ProductDiscountTier;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -14,8 +15,10 @@ class ProductManagement extends Component
     public $search = '';
     public $categoryFilter = '';
     public $showModal = false;
+    public $showDiscountModal = false;
     public $editMode = false;
     
+    // Product fields
     public $productId;
     public $sku;
     public $name;
@@ -25,6 +28,10 @@ class ProductManagement extends Component
     public $price;
     public $min_stock = 10;
     public $is_active = true;
+
+    // Discount tiers
+    public $selectedProductForDiscount;
+    public $discountTiers = [];
 
     protected $rules = [
         'sku' => 'required|string|max:50|unique:products,sku',
@@ -70,6 +77,8 @@ class ProductManagement extends Component
             'productId', 'sku', 'name', 'description', 
             'category_id', 'unit', 'price', 'min_stock', 'is_active', 'editMode'
         ]);
+        $this->unit = 'pcs';
+        $this->is_active = true;
         $this->resetValidation();
     }
 
@@ -170,11 +179,95 @@ class ProductManagement extends Component
         }
     }
 
+    // ========================================
+    // DISCOUNT MANAGEMENT
+    // ========================================
+
+    public function openDiscountModal($productId)
+    {
+        $this->selectedProductForDiscount = Product::with('discountTiers')->findOrFail($productId);
+        
+        $this->discountTiers = $this->selectedProductForDiscount->discountTiers
+            ->map(fn($tier) => [
+                'id' => $tier->id,
+                'min_quantity' => $tier->min_quantity,
+                'discount_percentage' => $tier->discount_percentage,
+                'is_active' => $tier->is_active,
+            ])
+            ->toArray();
+
+        $this->showDiscountModal = true;
+    }
+
+    public function closeDiscountModal()
+    {
+        $this->showDiscountModal = false;
+        $this->selectedProductForDiscount = null;
+        $this->discountTiers = [];
+    }
+
+    public function addDiscountTier()
+    {
+        $this->discountTiers[] = [
+            'id' => null,
+            'min_quantity' => '',
+            'discount_percentage' => '',
+            'is_active' => true,
+        ];
+    }
+
+    public function removeDiscountTier($index)
+    {
+        unset($this->discountTiers[$index]);
+        $this->discountTiers = array_values($this->discountTiers);
+    }
+
+    public function saveDiscounts()
+    {
+        // Validate
+        foreach ($this->discountTiers as $index => $tier) {
+            if (!$tier['min_quantity'] || !$tier['discount_percentage']) {
+                $this->dispatch('notify', [
+                    'type' => 'error',
+                    'message' => 'Lengkapi semua data diskon'
+                ]);
+                return;
+            }
+        }
+
+        try {
+            // Delete existing tiers
+            ProductDiscountTier::where('product_id', $this->selectedProductForDiscount->id)->delete();
+
+            // Create new tiers
+            foreach ($this->discountTiers as $tier) {
+                ProductDiscountTier::create([
+                    'product_id' => $this->selectedProductForDiscount->id,
+                    'min_quantity' => (int)$tier['min_quantity'],
+                    'discount_percentage' => (float)$tier['discount_percentage'],
+                    'is_active' => $tier['is_active'],
+                ]);
+            }
+
+            $this->dispatch('notify', [
+                'type' => 'success',
+                'message' => 'Diskon berhasil disimpan!'
+            ]);
+
+            $this->closeDiscountModal();
+
+        } catch (\Exception $e) {
+            $this->dispatch('notify', [
+                'type' => 'error',
+                'message' => 'Gagal menyimpan diskon: ' . $e->getMessage()
+            ]);
+        }
+    }
+
     public function render()
     {
         $query = Product::with('category')->latest();
 
-        // Search
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('name', 'like', '%' . $this->search . '%')
@@ -182,7 +275,6 @@ class ProductManagement extends Component
             });
         }
 
-        // Category filter
         if ($this->categoryFilter) {
             $query->where('category_id', $this->categoryFilter);
         }

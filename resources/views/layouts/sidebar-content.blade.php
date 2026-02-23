@@ -30,6 +30,18 @@
         </svg>
         <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Dashboard</span>
     </a>
+            @if(auth()->user()->outlet_id)
+            <a href="{{ route('pos') }}" 
+            class="flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-lg
+                    {{ request()->routeIs('pos*') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-50' }}">
+                <svg class="w-5 h-5 flex-shrink-0 transition-colors {{ request()->routeIs('dashboard') ? 'text-white' : 'text-gray-400 group-hover:text-primary-600' }} {{ $isMobile || !isset($isMobile) ? 'mr-3' : '' }}" 
+             :class="!{{ $isMobile ? 'true' : 'false' }} && sidebarMinimized ? 'mx-auto' : 'mr-3'"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/>
+                </svg>
+                 <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Point of Sale</span>
+            </a>
+            @endif
 
     
     <div x-data="{ open: {{ request()->routeIs('stock.*') ? 'true' : 'false' }} }">
@@ -60,12 +72,23 @@
                 Stok Menipis
                 @livewire('components.low-stock-badge')
             </a>
-        </div>
-    </div>
+           
+
+<!-- Admin Only - Goods Receipt -->
+            @can('manage-users')
+            <a href="{{ route('admin.goods-receipt') }}" 
+            class="flex items-center px-3 py-2 mt-1 text-sm font-medium rounded-lg
+                    {{ request()->routeIs('admin.goods-receipt') ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-50' }}">
+                
+                Penerimaan Barang
+            </a>
+            @endcan
+                    </div>
+                </div>
 
 
         <!-- Transfer -->
-         @can('manage-users')
+         
         <div x-data="{ open: {{ request()->routeIs('transfer.*') ? 'true' : 'false' }} }">
             <button @click="{{ !$isMobile ? 'sidebarMinimized ? sidebarMinimized = false : open = !open' : 'open = !open' }}" 
                 class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-100 transition-all group">
@@ -75,7 +98,7 @@
                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
                     </svg>
-                        <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Manajemen Stok</span>
+                        <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Manajemen Transfer</span>
                 </div>
                  <svg x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" 
                  class="w-4 h-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +115,17 @@
                               : 'text-gray-600 hover:bg-gray-50' }}">
                     Buat Transfer
                 </a>
+                                </a>
+                <a href="{{ route('sales.list') }}" 
+       class="block px-3 py-2 text-sm rounded-lg transition-colors
+                          {{ request()->routeIs('sales.list') 
+                              ? 'bg-primary-50 text-primary-700' 
+                              : 'text-gray-600 hover:bg-gray-50' }}">
+        
+        Daftar Transaksi
+    </a>
                 @endcan
+                @can('manage-audit')
                 <a href="{{ route('transfer.list') }}" 
                    class="block px-3 py-2 text-sm rounded-lg transition-colors
                           {{ request()->routeIs('transfer.list') 
@@ -100,6 +133,7 @@
                               : 'text-gray-600 hover:bg-gray-50' }}">
                     Daftar Transfer
                 </a>
+                @endcan
                 @can('approve-transfers')
                 <a href="{{ route('transfer.pending') }}" 
                    class="block px-3 py-2 text-sm rounded-lg transition-colors
@@ -109,15 +143,15 @@
                     Pending Approval
                     @livewire('components.pending-transfer-badge')
                 </a>
+                
                 @endcan
             </div>
         </div>
-        @endcan
 
        <a href="{{ route('shipment.list') }}" 
            class="flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 group
                   {{ request()->routeIs('shipment.*') 
-                      ? 'bg-primary-600 text-slate-600' 
+                      ? 'bg-primary-100 text-slate-600' 
                       : 'text-gray-700 hover:bg-gray-100' }}">
             <svg class="w-5 h-5 flex-shrink-0 transition-colors {{ request()->routeIs('shipment.*') ? 'text-slate-600' : 'text-gray-400 group-hover:text-slate-600' }}" 
                  :class="!{{ $isMobile ? 'true' : 'false' }} && sidebarMinimized ? 'mx-auto' : 'mr-3'"
@@ -128,7 +162,7 @@
             <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Pelacakan Pengiriman</span>
         </a>
 
-        @can('manage-users')
+        @can('manage-audit')
         <div x-data="{ open: {{ request()->routeIs('audit.*') ? 'true' : 'false' }} }">
             <button @click="{{ !$isMobile ? 'sidebarMinimized ? sidebarMinimized = false : open = !open' : 'open = !open' }}" 
                     class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-gray-700 rounded-xl hover:bg-gray-100 transition-all group">
@@ -191,4 +225,30 @@
             </div>
         </div>
         @endcan
+        
+<div class="mt-4 pt-4 border-t border-gray-200">
+    <div x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" 
+             x-transition:enter="transition ease-out duration-200" 
+             x-transition:enter-start="opacity-0 transform -translate-x-2" 
+             x-transition:enter-end="opacity-100 transform translate-x-0"
+             class="flex flex-col">
+        <p class="px-3 text-xs font-semibold text-gray-400 uppercase tracking-wider">
+            Pegadaian
+        </p>
+    </div>
+    
+    <a href="{{ route('pegadaian.list') }}" 
+       class="flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 group
+                  {{ request()->routeIs('pegadaian.*') 
+                      ? 'bg-slate-100 text-slate-600' 
+                      : 'text-gray-700 hover:bg-gray-100' }}">
+        <svg class="w-5 h-5 flex-shrink-0 transition-colors {{ request()->routeIs('pegadaian.*') ? 'text-slate-600' : 'text-gray-400 group-hover:text-slate-600' }}" 
+             :class="!{{ $isMobile ? 'true' : 'false' }} && sidebarMinimized ? 'mx-auto' : 'mr-3'"
+             fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+                    <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Daftar Pegadaian</span>
+    </a>
+</div>
+
         </nav>

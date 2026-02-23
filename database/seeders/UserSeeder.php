@@ -29,16 +29,16 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Kepala Ruko Kemang',
-            'email' => 'kemang@meksiko.com',
+            'name' => 'Kepala Ruko dander',
+            'email' => 'dander@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,
             'outlet_id' => $ruko1->id,
         ]);
 
         User::create([
-            'name' => 'Kepala Ruko Kelapa Gading',
-            'email' => 'kelapagading@meksiko.com',
+            'name' => 'Kepala Ruko bubulan',
+            'email' => 'Bubulan@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,
             'outlet_id' => $ruko2->id,

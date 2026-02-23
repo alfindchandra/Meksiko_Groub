@@ -25,6 +25,15 @@ class Role extends Model
         return $this->name === 'kepala_ruko';
     }
 
+    public function isAuditor(): bool
+    {
+        return $this->name === 'auditor';
+    }
+    public function isPegadaian(): bool
+    {
+        return $this->name === 'pegadaian';
+    }
+
     public function isStaffGudang(): bool
     {
         return $this->name === 'staff_gudang';

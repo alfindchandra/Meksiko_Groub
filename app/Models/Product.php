@@ -50,4 +50,15 @@ class Product extends Model
     {
         return $this->stocks()->where('outlet_id', $outletId)->first();
     }
+    public function discountTiers(): HasMany
+{
+    return $this->hasMany(ProductDiscountTier::class);
+}
+
+public function activeDiscountTiers(): HasMany
+{
+    return $this->hasMany(ProductDiscountTier::class)
+        ->where('is_active', true)
+        ->orderBy('min_quantity', 'asc');
+}
 }

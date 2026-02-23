@@ -177,7 +177,7 @@
                     <button type="submit" 
                             class="w-full sm:w-auto px-8 py-2.5 text-center text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl shadow-lg shadow-indigo-200 transition-all disabled:opacity-50"
                             wire:loading.attr="disabled"
-                            wire:target="submit">
+                            wire:target="submit"> 
                         <span wire:loading.remove wire:target="submit" class="flex items-center justify-center">
                             Audit Sekarang
                         </span>

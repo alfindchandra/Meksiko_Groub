@@ -33,6 +33,9 @@ class AuthServiceProvider extends ServiceProvider
         Gate::define('manage-audit', function ($user) {
             return $user->isAuditor() || $user->isAdminPusat();
         });
+        Gate::define('view-audit', function ($user) {
+            return $user->isAuditor() || $user->isAdminPusat() || $user->isKepalaRuko();
+        });
         Gate::define('create-pegadaian', function ($user) {
             return $user->isPegadaian();
         });

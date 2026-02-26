@@ -18,7 +18,7 @@
                             <option value="year">Tahun Ini</option>
                             <option value="custom">Custom</option>
                         </select>
-                        <a href="{{ route('admin.reports') }}" class="btn-primary whitespace-nowrap bg-blue-600 text-white px-4 py-2 rounded-xl flex items-center shadow-sm hover:bg-blue-700 transition">
+                        <a href="{{ route('admin.reports.sales') }}" class="btn-primary whitespace-nowrap bg-blue-600 text-white px-4 py-2 rounded-xl flex items-center shadow-sm hover:bg-blue-700 transition">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
@@ -81,23 +81,47 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <!-- Chart 1: Trend Penjualan -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 transform hover:-translate-y-1 transition duration-300">
                     <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
                         <span class="p-2 bg-green-50 rounded-lg mr-3"><svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg></span>
-                        Trend Penjualan
+                        Trend Penjualan & Transaksi
                     </h3>
                     <div wire:ignore class="relative h-[300px] w-full">
                         <canvas id="salesChart"></canvas>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6">
+                <!-- Chart 2: Pendapatan per Outlet -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 transform hover:-translate-y-1 transition duration-300">
                     <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
-                        <span class="p-2 bg-blue-50 rounded-lg mr-3"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg></span>
-                        Pergerakan Stok
+                        <span class="p-2 bg-blue-50 rounded-lg mr-3"><svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></span>
+                        Pendapatan per Outlet
                     </h3>
                     <div wire:ignore class="relative h-[300px] w-full">
-                        <canvas id="stockMovementChart"></canvas>
+                        <canvas id="revenueByOutletChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 3: Penjualan per Kategori -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 transform hover:-translate-y-1 transition duration-300">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="p-2 bg-purple-50 rounded-lg mr-3"><svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z" /></svg></span>
+                        Kategori Terlaris
+                    </h3>
+                    <div wire:ignore class="relative h-[300px] w-full">
+                        <canvas id="salesByCategoryChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Chart 4: Pergerakan Stok -> Stok per Cabang -->
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 transform hover:-translate-y-1 transition duration-300">
+                    <h3 class="text-lg font-bold text-gray-900 mb-6 flex items-center">
+                        <span class="p-2 bg-orange-50 rounded-lg mr-3"><svg class="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"/></svg></span>
+                        Stok di Setiap Cabang
+                    </h3>
+                    <div wire:ignore class="relative h-[300px] w-full">
+                        <canvas id="stockByOutletChart"></canvas>
                     </div>
                 </div>
             </div>
@@ -153,15 +177,19 @@
 
     @push('scripts')
     <script>
-        let salesChart, stockChart;
+        let salesChart, stockChart, revenueOutletChart, categoryChart;
 
         function initDashboardCharts() {
             const salesCanvas = document.getElementById('salesChart');
-            const stockCanvas = document.getElementById('stockMovementChart');
+            const stockCanvas = document.getElementById('stockByOutletChart');
+            const revenueOutletCanvas = document.getElementById('revenueByOutletChart');
+            const categoryCanvas = document.getElementById('salesByCategoryChart');
 
             // Data dari Blade dikonversi ke JS sekali saja
             const salesData = @json($salesChart ?? ['labels' => [], 'revenue' => [], 'transactions' => []]);
-            const stockData = @json($stockMovement ?? ['labels' => [], 'data' => []]);
+            const stockData = @json($stockByOutlet ?? ['labels' => [], 'data' => []]);
+            const revenueOutletData = @json($revenueByOutletChart ?? ['labels' => [], 'data' => []]);
+            const categoryData = @json($salesByCategoryChart ?? ['labels' => [], 'data' => []]);
 
             if (salesCanvas) {
                 if (salesChart) salesChart.destroy();
@@ -171,7 +199,7 @@
                         labels: salesData.labels,
                         datasets: [
                             {
-                                label: 'Revenue (Rp)',
+                                label: 'Pendapatan (Rp)',
                                 data: salesData.revenue,
                                 borderColor: '#22c55e',
                                 backgroundColor: 'rgba(34, 197, 94, 0.1)',
@@ -192,10 +220,53 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
+                        interaction: { mode: 'index', intersect: false },
                         scales: {
                             y: { type: 'linear', position: 'left' },
                             y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
                         }
+                    }
+                });
+            }
+
+            if (revenueOutletCanvas) {
+                if (revenueOutletChart) revenueOutletChart.destroy();
+                revenueOutletChart = new Chart(revenueOutletCanvas.getContext('2d'), {
+                    type: 'bar',
+                    data: {
+                        labels: revenueOutletData.labels,
+                        datasets: [{
+                            label: 'Pendapatan (Rp)',
+                            data: revenueOutletData.data,
+                            backgroundColor: '#3b82f6',
+                            borderRadius: 6
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+            }
+
+            if (categoryCanvas) {
+                if (categoryChart) categoryChart.destroy();
+                categoryChart = new Chart(categoryCanvas.getContext('2d'), {
+                    type: 'doughnut',
+                    data: {
+                        labels: categoryData.labels,
+                        datasets: [{
+                            data: categoryData.data,
+                            backgroundColor: ['#8b5cf6', '#ec4899', '#f43f5e', '#facc15', '#14b8a6', '#6366f1'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right' } }
                     }
                 });
             }
@@ -215,7 +286,7 @@
                     options: {
                         responsive: true,
                         maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
+                        plugins: { legend: { position: 'right' } }
                     }
                 });
             }
@@ -223,33 +294,42 @@
 
         // Livewire 3 Event Listeners
         document.addEventListener('livewire:init', () => {
-    // Inisialisasi awal saat halaman dimuat
-    initDashboardCharts();
+            // Inisialisasi awal saat halaman dimuat
+            initDashboardCharts();
 
-    // Menangkap event 'charts-refreshed' dari Livewire
-    Livewire.on('charts-refreshed', (eventData) => {
-        // eventData[0] berisi data sales dan stock yang dikirim dari PHP
-        const data = eventData[0];
-        
-        // Panggil fungsi render ulang dengan data baru
-        updateChartsWithData(data);
-    });
-});
+            // Menangkap event 'charts-refreshed' dari Livewire
+            Livewire.on('charts-refreshed', (eventData) => {
+                const data = eventData[0];
+                updateChartsWithData(data);
+            });
+        });
 
-function updateChartsWithData(data) {
-    if (salesChart) {
-        salesChart.data.labels = data.sales.labels;
-        salesChart.data.datasets[0].data = data.sales.revenue;
-        salesChart.data.datasets[1].data = data.sales.transactions;
-        salesChart.update();
-    }
+        function updateChartsWithData(data) {
+            if (salesChart) {
+                salesChart.data.labels = data.sales.labels;
+                salesChart.data.datasets[0].data = data.sales.revenue;
+                salesChart.data.datasets[1].data = data.sales.transactions;
+                salesChart.update();
+            }
 
-    if (stockChart) {
-        stockChart.data.labels = data.stock.labels;
-        stockChart.data.datasets[0].data = data.stock.data;
-        stockChart.update();
-    }
-}
+            if (revenueOutletChart) {
+                revenueOutletChart.data.labels = data.revenueByOutlet.labels;
+                revenueOutletChart.data.datasets[0].data = data.revenueByOutlet.data;
+                revenueOutletChart.update();
+            }
+
+            if (categoryChart) {
+                categoryChart.data.labels = data.salesByCategory.labels;
+                categoryChart.data.datasets[0].data = data.salesByCategory.data;
+                categoryChart.update();
+            }
+
+            if (stockChart) {
+                stockChart.data.labels = data.stock.labels;
+                stockChart.data.datasets[0].data = data.stock.data;
+                stockChart.update();
+            }
+        }
     </script>
     @endpush
 </div>

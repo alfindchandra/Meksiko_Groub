@@ -15,10 +15,20 @@ new #[Layout('layouts.guest')] class extends Component
         $this->showPassword = !$this->showPassword;
     }
 
+    public function mount()
+    {
+        if (old('form.email')) {
+            $this->form->email = old('form.email');
+        }
+        if (old('form.remember')) {
+            $this->form->remember = old('form.remember');
+        }
+    }
+
     /**
      * Handle an incoming authentication request.
      */
-    public function login() // Hapus ": void" di sini agar tidak merah
+    public function login() 
     {
         $this->validate();
 
@@ -27,10 +37,16 @@ new #[Layout('layouts.guest')] class extends Component
             
             Session::regenerate();
 
-            // Gunakan redirect()->intended() jika $this->redirectIntended() masih merah
             return redirect()->intended(route('dashboard', absolute: false));
             
         } catch (\Illuminate\Validation\ValidationException $e) {
+            $this->form->reset('password');
+            
+            // Ambil pesan utama dari exception untuk ditampilkan sebagai flash message
+            $errorMessage = collect($e->errors())->flatten()->first();
+            Session::flash('error', $errorMessage);
+
+            // Kita lemparkan kembali exception-nya agar Livewire memunculkan error pada field
             throw $e;
         }
     }
@@ -45,6 +61,23 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <x-auth-session-status class="mb-4" :status="session('status')" />
+
+        @if (session('error'))
+            <div class="mb-5 bg-red-50 border-l-4 border-red-500 p-4 rounded-r-xl shadow-sm">
+                <div class="flex items-center">
+                    <div class="flex-shrink-0">
+                        <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="ml-3">
+                        <p class="text-sm font-medium text-red-800">
+                            {{ session('error') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
 
         <form wire:submit="login" class="space-y-5">
             <div>

@@ -18,6 +18,7 @@
 
 
 <nav class="px-3 py-4 space-y-1 overflow-y-auto">
+    @can('view-audit')
     <a href="{{ route('dashboard') }}" 
        class="flex items-center px-3 py-2 text-sm font-medium rounded-xl transition-all duration-200 group
               {{ request()->routeIs('dashboard') 
@@ -225,7 +226,7 @@
             </div>
         </div>
         @endcan
-        
+@endcan
 <div class="mt-4 pt-4 border-t border-gray-200">
     <div x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" 
              x-transition:enter="transition ease-out duration-200" 

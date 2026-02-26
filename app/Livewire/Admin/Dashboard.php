@@ -9,6 +9,7 @@ use App\Models\Sale;
 use App\Models\PawnTransaction;
 use App\Models\Audit;
 use App\Models\Outlet;
+use App\Models\Category;
 use Livewire\Component;
 use Illuminate\Support\Facades\DB;
 
@@ -32,28 +33,32 @@ class Dashboard extends Component
     public function updatedDateRange($value)
     {
         $this->dateRange = $value;
-        // Mengirim data terbaru agar JS bisa langsung update
-        $this->dispatch('charts-refreshed', [
-            'sales' => $this->getSalesChartData($this->getDateFrom(), $this->getDateTo()),
-            'stock' => $this->getStockMovementData($this->getDateFrom(), $this->getDateTo())
-        ]);
+        $this->emitChartUpdate();
     }
 
     public function updatedCustomDateFrom()
     {
         $this->dateRange = 'custom';
-        $this->dispatch('charts-refreshed', [
-            'sales' => $this->getSalesChartData($this->getDateFrom(), $this->getDateTo()),
-            'stock' => $this->getStockMovementData($this->getDateFrom(), $this->getDateTo())
-        ]);
+        $this->emitChartUpdate();
     }
 
     public function updatedCustomDateTo()
     {
         $this->dateRange = 'custom';
+        $this->emitChartUpdate();
+    }
+
+    private function emitChartUpdate()
+    {
+        $dateFrom = $this->getDateFrom();
+        $dateTo = $this->getDateTo();
+
+        // Mengirim 4 data grafik agar JS bisa update secara dinamis
         $this->dispatch('charts-refreshed', [
-            'sales' => $this->getSalesChartData($this->getDateFrom(), $this->getDateTo()),
-            'stock' => $this->getStockMovementData($this->getDateFrom(), $this->getDateTo())
+            'sales' => $this->getSalesChartData($dateFrom, $dateTo),
+            'stock' => $this->getStockByOutletData(),
+            'revenueByOutlet' => $this->getRevenueByOutletChartData($dateFrom, $dateTo),
+            'salesByCategory' => $this->getSalesByCategoryChartData($dateFrom, $dateTo)
         ]);
     }
 
@@ -106,8 +111,8 @@ class Dashboard extends Component
             ->limit(5)
             ->get();
 
-        // Stock Movement Chart
-        $stockMovement = $this->getStockMovementData($dateFrom, $dateTo);
+        // Stock by Outlet Chart
+        $stockByOutlet = $this->getStockByOutletData();
 
         // Recent Activities
         $recentActivities = $this->getRecentActivities();
@@ -116,8 +121,10 @@ class Dashboard extends Component
             'stats' => $stats,
             'salesChart' => $salesChart,
             'revenueByOutlet' => $revenueByOutlet,
+            'revenueByOutletChart' => $this->getRevenueByOutletChartData($dateFrom, $dateTo),
+            'salesByCategoryChart' => $this->getSalesByCategoryChartData($dateFrom, $dateTo),
             'topProducts' => $topProducts,
-            'stockMovement' => $stockMovement,
+            'stockByOutlet' => $stockByOutlet,
             'recentActivities' => $recentActivities,
         ])->layout('layouts.app');
     }
@@ -171,18 +178,50 @@ class Dashboard extends Component
         ];
     }
 
-    private function getStockMovementData($from, $to)
+    private function getStockByOutletData()
     {
-        $movements = DB::table('stock_histories')
-            ->select('type', DB::raw('COUNT(*) as count'), DB::raw('SUM(quantity_change) as total_qty'))
-            ->whereBetween('created_at', [$from, $to])
-            ->groupBy('type')
+        $stocks = Stock::with('outlet')
+            ->select('outlet_id', DB::raw('SUM(quantity) as total_qty'))
+            ->groupBy('outlet_id')
             ->get();
 
         return [
-            'labels' => $movements->pluck('type')->map(fn($t) => ucfirst(str_replace('_', ' ', $t)))->toArray(),
-            'data' => $movements->pluck('total_qty')->toArray(),
-            'colors' => ['#10b981', '#ef4444', '#f59e0b', '#3b82f6', '#8b5cf6'],
+            'labels' => $stocks->map(fn($s) => $s->outlet ? $s->outlet->name : 'Unknown')->toArray(),
+            'data' => $stocks->pluck('total_qty')->toArray(),
+            'colors' => ['#10b981', '#3b82f6', '#f59e0b', '#8b5cf6', '#ec4899', '#14b8a6', '#f43f5e'],
+        ];
+    }
+
+    private function getRevenueByOutletChartData($from, $to)
+    {
+        $revenues = Sale::select('outlet_id', DB::raw('SUM(total) as total_revenue'))
+            ->whereBetween('created_at', [$from, $to])
+            ->with('outlet')
+            ->groupBy('outlet_id')
+            ->orderByDesc('total_revenue')
+            ->get();
+
+        return [
+            'labels' => $revenues->map(fn($r) => $r->outlet ? $r->outlet->name : 'Unknown')->toArray(),
+            'data' => $revenues->pluck('total_revenue')->toArray(),
+        ];
+    }
+
+    private function getSalesByCategoryChartData($from, $to)
+    {
+        $categories = DB::table('sale_items')
+            ->join('products', 'sale_items.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
+            ->whereBetween('sales.created_at', [$from, $to])
+            ->select('categories.name', DB::raw('SUM(sale_items.quantity) as total_qty'))
+            ->groupBy('categories.id', 'categories.name')
+            ->orderByDesc('total_qty')
+            ->get();
+
+        return [
+            'labels' => $categories->pluck('name')->toArray(),
+            'data' => $categories->pluck('total_qty')->toArray(),
         ];
     }
 

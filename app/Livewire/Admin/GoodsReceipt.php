@@ -87,8 +87,12 @@ class GoodsReceipt extends Component
         if (str_ends_with($key, '.quantity') || str_ends_with($key, '.unit_cost')) {
             $index = (int) explode('.', $key)[0];
             if (isset($this->receivedProducts[$index])) {
-                $qty = (float)($this->receivedProducts[$index]['quantity'] ?? 0);
-                $cost = (float)($this->receivedProducts[$index]['unit_cost'] ?? 0);
+                $qtyInput = $this->receivedProducts[$index]['quantity'] ?? 0;
+                $costInput = $this->receivedProducts[$index]['unit_cost'] ?? 0;
+                
+                $qty = $qtyInput === '' ? 0 : (float)$qtyInput;
+                $cost = $costInput === '' ? 0 : (float)$costInput;
+                
                 $this->receivedProducts[$index]['total_cost'] = $qty * $cost;
             }
         }
@@ -124,7 +128,7 @@ class GoodsReceipt extends Component
 
             DB::commit();
 
-            $totalQty = (int)collect($this->receivedProducts)->sum('quantity');
+            $totalQty = (int)collect($this->receivedProducts)->sum(fn($item) => (float)($item['quantity'] === '' ? 0 : $item['quantity']));
             $this->dispatch('notify', [
                 'type' => 'success',
                 'message' => "Berhasil! {$totalQty} unit masuk ke gudang."

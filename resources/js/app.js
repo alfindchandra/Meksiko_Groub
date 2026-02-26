@@ -3,13 +3,13 @@ import Chart from "chart.js/auto";
 
 window.Chart = Chart;
 
-import Alpine from "alpinejs";
-window.Alpine = Alpine;
-
 document.addEventListener("livewire:init", () => {
-    import("@alpinejs/collapse").then((module) => {
-        window.Alpine.plugin(module.default);
-    });
-});
+    // Gunakan Alpine yang sudah di-bundle Livewire 3
+    const Alpine = window.Alpine;
 
-// Fungsi inisialisasi grafik yang dapat dipanggil ulang
+    if (Alpine) {
+        import("@alpinejs/collapse").then((module) => {
+            Alpine.plugin(module.default);
+        });
+    }
+});

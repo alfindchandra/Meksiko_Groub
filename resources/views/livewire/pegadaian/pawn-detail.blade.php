@@ -1,9 +1,14 @@
 <div>
 <div x-data="{ 
-    showRedemption: @entangle('showRedemptionModal'), 
-    showExtension: @entangle('showExtensionModal'),
+    showRedemption: false, 
+    showExtension: false,
     selectedPhoto: null 
-}" class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
+}" 
+    x-on:open-redemption-modal.window="showRedemption = true"
+    x-on:close-redemption-modal.window="showRedemption = false"
+    x-on:open-extension-modal.window="showExtension = true"
+    x-on:close-extension-modal.window="showExtension = false"
+    class="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">
     @section('page-title', 'Detail Gadai')
 
     <div class="max-w-6xl mx-auto">
@@ -80,7 +85,7 @@
                 </div>
                 @endif
 
-                @if($pawn->isActive())
+                @if($pawn->isActive() || $pawn->status === 'extended')
                 <div class="flex items-center space-x-3">
                     <button wire:click="openExtensionModal" class="px-5 py-2.5 bg-white border border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 transition-all shadow-sm">
                         Perpanjang
@@ -313,7 +318,7 @@
                     </div>
                 </div>
 
-                @if($pawn->isActive())
+                @if($pawn->isActive() || $pawn->status === 'extended')
                 <div class="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl shadow-xl p-6 text-white overflow-hidden relative group">
                     <svg class="absolute -right-10 -bottom-10 w-40 h-40 opacity-10 group-hover:rotate-12 transition-transform duration-700" fill="currentColor" viewBox="0 0 20 20"><path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z"/><path fill-rule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clip-rule="evenodd"/></svg>
                     
@@ -376,46 +381,91 @@
     </div>
 
 
-    <div x-show="openExtensionModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showRedemption = false"></div>
+    <div x-show="showRedemption"
+     x-transition
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showRedemption = false"></div>
+
         <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
             <div class="px-8 py-6 bg-indigo-600 text-white flex justify-between items-center">
                 <h3 class="text-lg font-black uppercase tracking-widest">Proses Pelunasan</h3>
-                <button @click="showRedemption = false" class="hover:rotate-90 transition-transform"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <button wire:click="closeRedemptionModal" class="hover:rotate-90 transition-transform">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
+
             <div class="p-8">
                 <div class="mb-6 p-5 bg-indigo-50 rounded-2xl border border-indigo-100">
                     <div class="space-y-3 text-sm">
-                        <div class="flex justify-between text-gray-600"><span>Pokok</span><span class="font-bold text-gray-900">Rp {{ number_format($pawn->loan_amount, 0, ',', '.') }}</span></div>
-                        <div class="flex justify-between text-gray-600"><span>Bunga</span><span class="font-bold text-indigo-600">+ Rp {{ number_format($pawn->calculateInterest(), 0, ',', '.') }}</span></div>
-                        <div class="flex justify-between pt-3 border-t border-indigo-200 text-xl font-black text-indigo-700"><span>TOTAL</span><span>Rp {{ number_format($redemptionAmount, 0, ',', '.') }}</span></div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Pokok</span>
+                            <span class="font-bold text-gray-900">Rp {{ number_format($pawn->loan_amount, 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-600">
+                            <span>Bunga</span>
+                            <span class="font-bold text-indigo-600">+ Rp {{ number_format($pawn->calculateInterest(), 0, ',', '.') }}</span>
+                        </div>
+                        <div class="flex justify-between pt-3 border-t border-indigo-200 text-xl font-black text-indigo-700">
+                            <span>TOTAL</span>
+                            <span>Rp {{ number_format($redemptionAmount, 0, ',', '.') }}</span>
+                        </div>
                     </div>
                 </div>
                 
                 <div class="space-y-4">
                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest">Metode Bayar</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <button type="button" wire:click="$set('paymentMethod', 'cash')" class="p-4 rounded-2xl border-2 font-bold transition-all {{ $paymentMethod === 'cash' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-gray-100 text-gray-400' }}">CASH</button>
-                        <button type="button" wire:click="$set('paymentMethod', 'transfer')" class="p-4 rounded-2xl border-2 font-bold transition-all {{ $paymentMethod === 'transfer' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-gray-100 text-gray-400' }}">TRANSFER</button>
+                        <button type="button" 
+                                wire:click="$set('paymentMethod', 'cash')" 
+                                class="p-4 rounded-2xl border-2 font-bold transition-all 
+                                    {{ $paymentMethod === 'cash' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-gray-100 text-gray-400' }}">
+                            CASH
+                        </button>
+                        <button type="button" 
+                                wire:click="$set('paymentMethod', 'transfer')" 
+                                class="p-4 rounded-2xl border-2 font-bold transition-all 
+                                    {{ $paymentMethod === 'transfer' ? 'border-indigo-600 bg-indigo-50 text-indigo-700 shadow-inner' : 'border-gray-100 text-gray-400' }}">
+                            TRANSFER
+                        </button>
                     </div>
-                    <textarea wire:model="redemptionNotes" placeholder="Tambahkan catatan jika perlu..." class="w-full rounded-2xl border-gray-200 focus:ring-indigo-500 text-sm p-4 h-24"></textarea>
+                    <textarea wire:model="redemptionNotes" 
+                              placeholder="Tambahkan catatan jika perlu..." 
+                              class="w-full rounded-2xl border-gray-200 focus:ring-indigo-500 text-sm p-4 h-24"></textarea>
                 </div>
                 
-                <button wire:click="processRedemption" class="w-full mt-8 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:shadow-indigo-500/30 transition-all flex items-center justify-center space-x-2">
+                <button wire:click="processRedemption" 
+                        class="w-full mt-8 py-4 bg-indigo-600 text-white rounded-2xl font-black shadow-lg hover:shadow-indigo-500/30 transition-all"
+                        wire:loading.attr="disabled">
                     <span wire:loading.remove>KONFIRMASI PELUNASAN</span>
-                    <span wire:loading class="animate-spin">⌛</span>
+                    <span wire:loading>Memproses...</span>
                 </button>
             </div>
         </div>
     </div>
+</div>
 
-    <div x-show="openRedemptionModal" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" class="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-        <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="showExtension = false"></div>
+<!-- MODAL PERPANJANGAN -->
+<div x-show="showExtension"
+     x-transition
+     class="fixed inset-0 z-50 overflow-y-auto"
+     style="display: none;">
+    <div class="flex items-center justify-center min-h-screen px-4">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75" @click="showExtension = false"></div>
+
         <div class="relative bg-white rounded-3xl shadow-2xl max-w-md w-full overflow-hidden">
             <div class="px-8 py-6 bg-amber-500 text-white flex justify-between items-center">
                 <h3 class="text-lg font-black uppercase tracking-widest">Perpanjangan</h3>
-                <button @click="showExtension = false"><svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+                <button wire:click="closeExtensionModal">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </button>
             </div>
+
             <div class="p-8">
                 <div class="space-y-6">
                     <div>
@@ -424,11 +474,12 @@
                             <option value="15">15 HARI</option>
                             <option value="30">30 HARI (1 BULAN)</option>
                             <option value="60">60 HARI (2 BULAN)</option>
+                            <option value="90">90 HARI (3 BULAN)</option>
                         </select>
                     </div>
                     
                     <div class="p-6 bg-amber-50 rounded-2xl border-2 border-amber-200 text-center">
-                        <p class="text-[10px] font-black text-amber-600 uppercase mb-1">Biaya Administrasi</p>
+                        <p class="text-[10px] font-black text-amber-600 uppercase mb-1">Biaya Perpanjangan</p>
                         <p class="text-3xl font-black text-amber-700">Rp {{ number_format($extensionFee, 0, ',', '.') }}</p>
                         <div class="mt-4 pt-4 border-t border-amber-200 flex justify-between text-xs font-bold text-amber-600">
                             <span>JT BARU</span>
@@ -439,17 +490,31 @@
                     <div>
                         <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-3">Metode Bayar</label>
                         <div class="grid grid-cols-2 gap-3">
-                            <button type="button" wire:click="$set('paymentMethod', 'cash')" class="py-3 rounded-xl border-2 font-bold transition-all {{ $paymentMethod === 'cash' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-100 text-gray-400' }}">CASH</button>
-                            <button type="button" wire:click="$set('paymentMethod', 'transfer')" class="py-3 rounded-xl border-2 font-bold transition-all {{ $paymentMethod === 'transfer' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-100 text-gray-400' }}">TRANSFER</button>
+                            <button type="button" 
+                                    wire:click="$set('paymentMethod', 'cash')" 
+                                    class="py-3 rounded-xl border-2 font-bold transition-all 
+                                        {{ $paymentMethod === 'cash' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-100 text-gray-400' }}">
+                                CASH
+                            </button>
+                            <button type="button" 
+                                    wire:click="$set('paymentMethod', 'transfer')" 
+                                    class="py-3 rounded-xl border-2 font-bold transition-all 
+                                        {{ $paymentMethod === 'transfer' ? 'border-amber-500 bg-amber-50 text-amber-700' : 'border-gray-100 text-gray-400' }}">
+                                TRANSFER
+                            </button>
                         </div>
                     </div>
                 </div>
                 
-                <button wire:click="processExtension" class="w-full mt-8 py-4 bg-amber-500 text-white rounded-2xl font-black shadow-lg hover:shadow-amber-500/30 transition-all">
-                    PROSES PERPANJANGAN
+                <button wire:click="processExtension" 
+                        class="w-full mt-8 py-4 bg-amber-500 text-white rounded-2xl font-black shadow-lg hover:shadow-amber-500/30 transition-all"
+                        wire:loading.attr="disabled">
+                    <span wire:loading.remove>PROSES PERPANJANGAN</span>
+                    <span wire:loading>Memproses...</span>
                 </button>
             </div>
         </div>
     </div>
+</div>
 </div>
 

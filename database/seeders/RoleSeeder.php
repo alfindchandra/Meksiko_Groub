@@ -21,20 +21,15 @@ class RoleSeeder extends Seeder
                 'description' => 'Mengelola satu ruko tertentu',
             ],
             [
-                'name' => 'staff_gudang',
-                'display_name' => 'Staff Gudang',
-                'description' => 'Input dan verifikasi pengiriman',
-            ],
-            [
                 'name' => 'auditor',
                 'display_name' => 'Auditor',
                 'description' => 'Auditor internal untuk review stok dan transaksi',
             ],
-                [
-                    'name' => 'pegadaian',
-                    'display_name' => 'Pegadaian',
-                    'description' => 'Mengelola transaksi pegadaian',
-                ],
+            [
+                'name' => 'pegadaian',
+                'display_name' => 'Pegadaian',
+                'description' => 'Mengelola transaksi pegadaian',
+            ],
         ];
 
         foreach ($roles as $role) {

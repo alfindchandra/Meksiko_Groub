@@ -14,7 +14,10 @@ use App\Livewire\Shipment\ShipmentList;
 use App\Livewire\Audit\AuditList;
 use App\livewire\Pegadaian\PegadaianDashboard;
 use App\Livewire\Sales\SalesList;
-use App\Livewire\Admin\Reports;
+use App\Livewire\Admin\Reports\SalesReport;
+use App\Livewire\Admin\Reports\InventoryReport;
+use App\Livewire\Admin\Reports\PawnReport;
+use App\Livewire\Admin\Reports\ComparisonReport;
 use App\Livewire\Auditor\AuditorDashboard;
 use App\Livewire\Audit\CreateAudit;
 use App\Livewire\Pos\PointOfSale;
@@ -77,9 +80,16 @@ Route::get('/auditor/dashboard', AuditorDashboard::class)
         ->middleware('can:access-all-outlets')
         ->name('admin.dashboard');
 
-    Route::get('/admin/reports', Reports::class)->name('admin.reports');
+    Route::prefix('admin/reports')->name('admin.reports.')->group(function () {
+        Route::get('/', function () {
+            return redirect()->route('admin.reports.sales');
+        })->name('index');
 
-
+        Route::get('/sales', SalesReport::class)->name('sales');
+        Route::get('/inventory', InventoryReport::class)->name('inventory');
+        Route::get('/pawn', PawnReport::class)->name('pawn');
+        Route::get('/comparison', ComparisonReport::class)->name('comparison');
+    });
     Route::get('/outlet/dashboard', OutletDashboard::class)
         ->name('outlet.dashboard');
 

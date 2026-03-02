@@ -184,8 +184,9 @@
                                 <label class="text-sm font-medium text-slate-700">Nilai Taksir Barang</label>
                                 <div class="relative">
                                     <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 font-medium text-sm">Rp</span>
-                                    <input type="number" wire:model.live.debounce.2000ms="appraisal_value" class="w-full pl-10 rounded-lg border-slate-200 bg-slate-50 focus:bg-white transition-all">
+                                    <input type="number" wire:model.blur.live.debounce.2000ms="appraisal_value" class="w-full pl-10 rounded-lg border-slate-200 bg-slate-50 focus:bg-white transition-all">
                                 </div>
+                                @error('appraisal_value') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                             </div>
 
                             <div class="space-y-1">

@@ -83,7 +83,11 @@
             </div>
             @endforelse
         </div>
-
+        <!-- <div class="px-4 py-3 border-t border-gray-100">
+            <a href="{{ route('notifications.all') }}" class="text-sm text-primary-600 hover:text-primary-700">
+                Lihat semua notifikasi
+            </a>
+        </div> -->
         
     </div>
 </div>

@@ -40,8 +40,10 @@ class PawnReport extends Component
 
     public function render()
     {
+        $endDate = $this->dateTo . ' 23:59:59';
+
         $query = PawnTransaction::with(['outlet'])
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo]);
+            ->whereBetween('created_at', [$this->dateFrom, $endDate]);
 
         if ($this->selectedOutlet) {
             $query->where('outlet_id', $this->selectedOutlet);
@@ -65,7 +67,7 @@ class PawnReport extends Component
                 DB::raw('COUNT(*) as transactions'),
                 DB::raw('SUM(loan_amount) as total_loan')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('date')
             ->orderBy('date')
@@ -77,7 +79,7 @@ class PawnReport extends Component
                 DB::raw('COUNT(*) as count'),
                 DB::raw('SUM(loan_amount) as total_loan')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('item_category')
             ->get();
@@ -87,7 +89,7 @@ class PawnReport extends Component
                 'status',
                 DB::raw('COUNT(*) as count')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('status')
             ->get();

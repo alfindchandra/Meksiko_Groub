@@ -45,19 +45,19 @@ class StockTransferPolicy
     }
 
     public function send(User $user, StockTransfer $transfer): bool
-{
-    if (!$transfer->canBeSent()) {
-        return false;
-    }
+    {
+        if (!$transfer->canBeSent()) {
+            return false;
+        }
 
-    // Admin bisa kirim semua
-    if ($user->isAdminPusat()) {
-        return true;
-    }
+        // Admin bisa kirim semua
+        if ($user->isAdminPusat()) {
+            return true;
+        }
 
-    // Kepala ruko & staff hanya dari outlet pengirim
-    return $user->outlet_id === $transfer->from_outlet_id;
-}
+        // Hanya Kepala Ruko dari outlet pengirim yang bisa mengirim
+        return $user->isKepalaRuko() && $user->outlet_id === $transfer->from_outlet_id;
+    }
 
     public function receive(User $user, StockTransfer $transfer): bool
     {
@@ -65,8 +65,13 @@ class StockTransferPolicy
             return false;
         }
 
-        // Hanya dari outlet penerima
-        return $user->canAccessOutlet($transfer->to_outlet_id);
+        // Admin bisa terima semua
+        if ($user->isAdminPusat()) {
+            return true;
+        }
+
+        // Hanya Kepala Ruko dari outlet penerima yang bisa menerima
+        return $user->isKepalaRuko() && $user->outlet_id === $transfer->to_outlet_id;
     }
 
     public function delete(User $user, StockTransfer $transfer): bool

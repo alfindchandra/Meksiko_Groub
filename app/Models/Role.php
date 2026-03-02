@@ -38,4 +38,9 @@ class Role extends Model
     {
         return $this->name === 'staff_gudang';
     }
+
+    public function isMeksikoClean(): bool
+    {
+        return $this->name === 'meksiko_clean';
+    }
 }

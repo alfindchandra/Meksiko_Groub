@@ -158,7 +158,7 @@
                                 </a>
                                 @endif
                             @endcan
-
+                            @can('manage-ruko')
                             @can('receive', $transfer)
                                 @if($transfer->canBeReceived())
                                 <a href="{{ route('transfer.receive', $transfer->id) }}" class="w-full flex items-center justify-center px-6 py-3 bg-emerald-600 text-white font-bold rounded-2xl hover:bg-emerald-700 transition-all shadow-lg shadow-emerald-100">
@@ -166,15 +166,20 @@
                                 </a>
                                 @endif
                             @endcan
+                            @endcan
                             
-                            <a href="{{ route('transfer.surat-jalan', $transfer->id) }}"
-   target="_blank"
-   class="w-full flex items-center justify-center px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-50 transition-all">
-    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
-    </svg>
-    Cetak Surat Jalan
-</a>
+                            @can('manage-users')
+                            @if(in_array($transfer->status, ['in_transit', 'received']))
+                                <a href="{{ route('transfer.surat-jalan', $transfer->id) }}"
+                                   target="_blank"
+                                   class="w-full flex items-center justify-center px-6 py-3 bg-white border border-gray-200 text-gray-600 font-bold rounded-2xl hover:bg-gray-50 transition-all">
+                                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                                    </svg>
+                                    Cetak Surat Jalan
+                                </a>
+                            @endif
+                            @endcan
                         </div>
                     </div>
 

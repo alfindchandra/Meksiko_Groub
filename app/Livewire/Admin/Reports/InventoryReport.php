@@ -40,6 +40,8 @@ class InventoryReport extends Component
 
     public function render()
     {
+        $endDate = $this->dateTo . ' 23:59:59';
+
         $query = Stock::with(['product.category', 'outlet']);
 
         if ($this->selectedOutlet) {
@@ -80,7 +82,7 @@ class InventoryReport extends Component
                 'type',
                 DB::raw('SUM(quantity_change) as total_qty')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('date', 'type')
             ->orderBy('date')

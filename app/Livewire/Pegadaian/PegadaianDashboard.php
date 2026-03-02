@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\DB;
 
 class PegadaianDashboard extends Component
 {
-    public $dateFilter = 'today';
+    public $dateFilter = 'month';
     public $customDateFrom = '';
     public $customDateTo = '';
 

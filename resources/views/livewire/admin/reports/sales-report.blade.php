@@ -46,30 +46,60 @@
             </div>
 
 <div class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
-    <div class="bg-blue-500 rounded-3xl shadow-[0_8px_30px_rgba(59,130,246,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <p class="text-blue-100 text-xs font-bold tracking-wider uppercase mb-1">Transaksi</p>
-        <p class="text-3xl font-black relative z-10">{{ number_format($summary['total_sales'] ?? 0) }}</p>
+    <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-3xl shadow-[0_8px_30px_rgba(59,130,246,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group border border-blue-400/30">
+        <div class="absolute -right-4 -top-4 w-28 h-28 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+        <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-in"></div>
+        <div class="relative z-10 flex flex-col h-full justify-between">
+            <p class="text-blue-100 text-xs font-bold tracking-wider uppercase mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                Transaksi
+            </p>
+            <p class="text-4xl font-black">{{ number_format($summary['total_sales'] ?? 0) }}</p>
+        </div>
     </div>
-    <div class="bg-emerald-500 rounded-3xl shadow-[0_8px_30px_rgba(16,185,129,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <p class="text-emerald-100 text-xs font-bold tracking-wider uppercase mb-1">Pendapatan</p>
-        <p class="text-3xl font-black relative z-10">{{ number_format(($summary['total_revenue'] ?? 0) / 1000000, 1) }}Jt</p>
+    <div class="bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-3xl shadow-[0_8px_30px_rgba(16,185,129,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group border border-emerald-400/30">
+        <div class="absolute -right-4 -top-4 w-28 h-28 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+        <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-in"></div>
+        <div class="relative z-10 flex flex-col h-full justify-between">
+            <p class="text-emerald-100 text-xs font-bold tracking-wider uppercase mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                Pendapatan
+            </p>
+            <p class="text-4xl font-black">{{ number_format(($summary['total_revenue'] ?? 0) / 1000000, 1) }}<span class="text-2xl font-semibold opacity-80">Jt</span></p>
+        </div>
     </div>
-    <div class="bg-indigo-500 rounded-3xl shadow-[0_8px_30px_rgba(99,102,241,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <p class="text-indigo-100 text-xs font-bold tracking-wider uppercase mb-1">Item Terjual</p>
-        <p class="text-3xl font-black relative z-10">{{ number_format($summary['total_items'] ?? 0) }}</p>
+    <div class="bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-3xl shadow-[0_8px_30px_rgba(99,102,241,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group border border-indigo-400/30">
+        <div class="absolute -right-4 -top-4 w-28 h-28 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+        <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-in"></div>
+        <div class="relative z-10 flex flex-col h-full justify-between">
+            <p class="text-indigo-100 text-xs font-bold tracking-wider uppercase mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                Item Terjual
+            </p>
+            <p class="text-4xl font-black">{{ number_format($summary['total_items'] ?? 0) }}</p>
+        </div>
     </div>
-    <div class="bg-amber-500 rounded-3xl shadow-[0_8px_30px_rgba(245,158,11,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <p class="text-amber-100 text-xs font-bold tracking-wider uppercase mb-1">Avg Order</p>
-        <p class="text-3xl font-black relative z-10">{{ number_format(($summary['avg_transaction'] ?? 0) / 1000, 0) }}K</p>
+    <div class="bg-gradient-to-br from-amber-500 to-amber-600 rounded-3xl shadow-[0_8px_30px_rgba(245,158,11,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group border border-amber-400/30">
+        <div class="absolute -right-4 -top-4 w-28 h-28 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+        <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-in"></div>
+        <div class="relative z-10 flex flex-col h-full justify-between">
+            <p class="text-amber-100 text-xs font-bold tracking-wider uppercase mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+                Avg Order
+            </p>
+            <p class="text-4xl font-black">{{ number_format(($summary['avg_transaction'] ?? 0) / 1000, 0) }}<span class="text-2xl font-semibold opacity-80">K</span></p>
+        </div>
     </div>
-    <div class="bg-rose-500 rounded-3xl shadow-[0_8px_30px_rgba(225,29,72,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group col-span-2 md:col-span-1">
-        <div class="absolute -right-4 -top-4 w-24 h-24 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-        <p class="text-rose-100 text-xs font-bold tracking-wider uppercase mb-1">Total Diskon</p>
-        <p class="text-3xl font-black relative z-10">{{ number_format(($summary['total_discount'] ?? 0) / 1000, 0) }}K</p>
+    <div class="bg-gradient-to-br from-rose-500 to-rose-600 rounded-3xl shadow-[0_8px_30px_rgba(225,29,72,0.3)] p-6 text-white transform hover:-translate-y-1 transition duration-300 relative overflow-hidden group col-span-2 md:col-span-1 border border-rose-400/30">
+        <div class="absolute -right-4 -top-4 w-28 h-28 bg-white opacity-10 rounded-full group-hover:scale-150 transition-transform duration-700 ease-out"></div>
+        <div class="absolute -bottom-4 -left-4 w-20 h-20 bg-white opacity-5 rounded-full group-hover:scale-150 transition-transform duration-500 ease-in"></div>
+        <div class="relative z-10 flex flex-col h-full justify-between">
+            <p class="text-rose-100 text-xs font-bold tracking-wider uppercase mb-3 flex items-center gap-2">
+                <svg class="w-4 h-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                Total Diskon
+            </p>
+            <p class="text-4xl font-black">{{ number_format(($summary['total_discount'] ?? 0) / 1000, 0) }}<span class="text-2xl font-semibold opacity-80">K</span></p>
+        </div>
     </div>
 </div>
 
@@ -170,16 +200,16 @@
         // Destroy existing charts to prevent memory leaks and glitches
         Object.values(charts).forEach(chart => chart.destroy());
 
-        // Format modern gradients untuk garfik trend
-        const ctxDaily = document.getElementById('salesDailyTrendChart').getContext('2d');
-        const gradientDaily = ctxDaily.createLinearGradient(0, 0, 0, 300);
-        gradientDaily.addColorStop(0, 'rgba(16, 185, 129, 0.4)'); // emerald-500
-        gradientDaily.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
-
         // Extract Data
         const rawDailyTrend = newData ? newData.dailyTrend : @json($dailyTrend);
         const dailyLabels = rawDailyTrend.map(d => new Date(d.date).toLocaleDateString('id-ID', {day: 'numeric', month: 'short'}));
         const dailyData = rawDailyTrend.map(d => d.revenue);
+
+        // 1. Daily Trend
+        const ctxDaily = document.getElementById('salesDailyTrendChart').getContext('2d');
+        const gradientDaily = ctxDaily.createLinearGradient(0, 0, 0, 400);
+        gradientDaily.addColorStop(0, 'rgba(16, 185, 129, 0.5)'); // emerald-500
+        gradientDaily.addColorStop(1, 'rgba(16, 185, 129, 0.05)');
 
         // 1. Daily Trend
         charts.dailyTrend = new Chart(ctxDaily, {
@@ -208,13 +238,23 @@
                     mode: 'index',
                     intersect: false,
                 },
+                animation: {
+                    y: {
+                        duration: 2000,
+                        easing: 'easeOutElastic'
+                    }
+                },
                 plugins: { 
                     legend: { display: false },
                     tooltip: {
-                        backgroundColor: 'rgba(17, 24, 39, 0.9)',
-                        padding: 12,
+                        backgroundColor: 'rgba(17, 24, 39, 0.95)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
                         titleFont: { size: 13, family: "'Inter', sans-serif" },
                         bodyFont: { size: 14, weight: 'bold', family: "'Inter', sans-serif" },
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
                         callbacks: {
                             label: function(context) {
                                 return 'Rp ' + Number(context.raw).toLocaleString('id-ID');
@@ -223,10 +263,18 @@
                     }
                 },
                 scales: {
-                    x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif" } } },
+                    x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif" }, color: '#6b7280' } },
                     y: { 
-                        grid: { borderDash: [4, 4], color: '#f3f4f6' },
-                        ticks: { font: { family: "'Inter', sans-serif" } },
+                        grid: { borderDash: [4, 4], color: '#f3f4f6', drawBorder: false },
+                        ticks: { 
+                            font: { family: "'Inter', sans-serif" }, 
+                            color: '#6b7280',
+                            callback: function(value) {
+                                if (value >= 1000000) return (value / 1000000) + ' Jt';
+                                if (value >= 1000) return (value / 1000) + ' K';
+                                return value;
+                            }
+                        },
                         beginAtZero: true
                     }
                 }
@@ -252,9 +300,38 @@
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                cutout: '70%',
+                cutout: '75%',
+                animation: {
+                    animateScale: true,
+                    animateRotate: true,
+                    duration: 1500,
+                    easing: 'easeOutQuart'
+                },
                 plugins: { 
-                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, font: { family: "'Inter', sans-serif" } } } 
+                    legend: { 
+                        position: 'bottom', 
+                        labels: { 
+                            usePointStyle: true, 
+                            padding: 20, 
+                            font: { family: "'Inter', sans-serif", size: 12 },
+                            color: '#4b5563'
+                        } 
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                        titleColor: '#111827',
+                        bodyColor: '#374151',
+                        borderColor: '#e5e7eb',
+                        borderWidth: 1,
+                        padding: 12,
+                        cornerRadius: 8,
+                        boxPadding: 6,
+                        callbacks: {
+                            label: function(context) {
+                                return ' ' + context.label + ': Rp ' + Number(context.raw).toLocaleString('id-ID');
+                            }
+                        }
+                    }
                 } 
             }
         });
@@ -264,25 +341,49 @@
         const categoryLabels = rawCategory.map(c => c.name);
         const categoryData = rawCategory.map(c => c.total_revenue);
 
-        charts.category = new Chart(document.getElementById('categoryBreakdownChart'), {
+        const ctxCategory = document.getElementById('categoryBreakdownChart').getContext('2d');
+        const gradientCategory = ctxCategory.createLinearGradient(0, 0, 0, 400);
+        gradientCategory.addColorStop(0, '#8b5cf6');
+        gradientCategory.addColorStop(1, '#c4b5fd');
+
+        charts.category = new Chart(ctxCategory, {
             type: 'bar',
             data: {
                 labels: categoryLabels,
                 datasets: [{
                     label: 'Revenue',
                     data: categoryData,
-                    backgroundColor: '#8b5cf6',
-                    borderRadius: 6,
-                    barPercentage: 0.6
+                    backgroundColor: gradientCategory,
+                    borderRadius: 8,
+                    barPercentage: 0.6,
+                    borderSkipped: false
                 }]
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
+                animation: {
+                    delay: (context) => context.dataIndex * 100,
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(139, 92, 246, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return 'Rp ' + Number(context.raw).toLocaleString('id-ID');
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { border: { display: false }, grid: { color: '#f3f4f6', drawTicks: false } }
+                    x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif" }, color: '#6b7280' } },
+                    y: { 
+                        display: false // hide y axis for cleaner look
+                    }
                 }
             }
         });
@@ -292,7 +393,12 @@
         const hourlyLabels = rawHourly.map(h => String(h.hour).padStart(2, '0') + ':00');
         const hourlyData = rawHourly.map(h => h.transactions);
 
-        charts.hourly = new Chart(document.getElementById('hourlyPatternChart'), {
+        const ctxHourly = document.getElementById('hourlyPatternChart').getContext('2d');
+        const gradientHourly = ctxHourly.createLinearGradient(0, 0, 0, 300);
+        gradientHourly.addColorStop(0, 'rgba(245, 158, 11, 0.4)');
+        gradientHourly.addColorStop(1, 'rgba(245, 158, 11, 0.0)');
+
+        charts.hourly = new Chart(ctxHourly, {
             type: 'line',
             data: {
                 labels: hourlyLabels,
@@ -300,21 +406,44 @@
                     label: 'Transaksi',
                     data: hourlyData,
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    backgroundColor: gradientHourly,
                     borderWidth: 3,
                     tension: 0.4,
                     fill: true,
-                    pointRadius: 0,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#f59e0b',
+                    pointBorderWidth: 2,
+                    pointRadius: 4,
                     pointHoverRadius: 6
                 }]
             },
             options: { 
                 responsive: true, 
                 maintainAspectRatio: false, 
-                plugins: { legend: { display: false } },
+                interaction: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                animation: {
+                    x: { duration: 1500, easing: 'easeOutQuart' }
+                },
+                plugins: { 
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: 'rgba(245, 158, 11, 0.9)',
+                        padding: 12,
+                        cornerRadius: 8,
+                        displayColors: false,
+                        callbacks: {
+                            label: function(context) {
+                                return context.raw + ' Transaksi';
+                            }
+                        }
+                    }
+                },
                 scales: {
-                    x: { grid: { display: false } },
-                    y: { border: { display: false }, grid: { borderDash: [4, 4], color: '#f3f4f6' } }
+                    x: { grid: { display: false }, ticks: { font: { family: "'Inter', sans-serif" }, color: '#6b7280' } },
+                    y: { border: { display: false }, grid: { borderDash: [4, 4], color: '#f3f4f6' }, ticks: { stepSize: 1, font: { family: "'Inter', sans-serif" }, color: '#6b7280' }, beginAtZero: true }
                 }
             }
         });

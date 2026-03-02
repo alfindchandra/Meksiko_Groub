@@ -67,12 +67,17 @@ class PawnList extends Component
         $pawns = $query->paginate(15);
 
         // Stats
+        $statsQuery = PawnTransaction::query();
+        if (!auth()->user()->isAdminPusat() && auth()->user()->outlet_id) {
+            $statsQuery->where('outlet_id', auth()->user()->outlet_id);
+        }
+
         $stats = [
-            'total_active' => PawnTransaction::where('status', 'active')->count(),
-            'total_overdue' => PawnTransaction::where('status', 'active')
+            'total_active' => (clone $statsQuery)->where('status', 'active')->count(),
+            'total_overdue' => (clone $statsQuery)->where('status', 'active')
                 ->where('due_date', '<', now())
                 ->count(),
-            'total_loan' => PawnTransaction::where('status', 'active')->sum('loan_amount'),
+            'total_loan' => (clone $statsQuery)->where('status', 'active')->sum('loan_amount'),
         ];
 
         return view('livewire.pegadaian.pawn-list', [

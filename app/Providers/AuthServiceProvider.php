@@ -43,8 +43,8 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isPegadaian() || $user->isAdminPusat();
         });
 
-        Gate::define('approve-transfers', function ($user) {
-            return $user->isAdminPusat() || $user->isKepalaRuko();
+        Gate::define('manage-ruko', function ($user) {
+            return $user->isKepalaRuko();
         });
 
         Gate::define('create-transfer', function ($user) {
@@ -57,6 +57,10 @@ class AuthServiceProvider extends ServiceProvider
 
         Gate::define('conduct-audit', function ($user) {
             return $user->isKepalaRuko() || $user->isAdminPusat();
+        });
+
+        Gate::define('manage-clean', function ($user) {
+            return $user->isMeksikoClean();
         });
     }
 }

@@ -44,12 +44,15 @@ class UserSeeder extends Seeder
             'outlet_id' => $ruko2->id,
         ]);
 
+        $meksikoCleanRole = Role::where('name', 'meksiko_clean')->first();
+
         User::create([
-            'name' => 'Staff Gudang Pusat',
-            'email' => 'gudang@meksiko.com',
+            'name' => 'Admin Meksiko Clean',
+            'email' => 'meksikoclean@meksiko.com',
             'password' => Hash::make('password'),
-            'role_id' => $staffRole->id,
-            'outlet_id' => $warehouse->id,
+            'role_id' => $meksikoCleanRole->id,
+            'outlet_id' => null,
         ]);
+        
     }
 }

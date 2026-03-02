@@ -6,16 +6,7 @@
             <h2 class="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">Daftar Transaksi Gadai</h2>
             <p class="mt-2 text-sm text-gray-600">Pusat pengelolaan data dan status gadai nasabah secara real-time.</p>
         </div>
-        @can('create-pegadaian')
-        <div class="mt-4 sm:mt-0">
-            <a href="{{ route('pegadaian.create') }}" class="inline-flex items-center justify-center px-5 py-2.5 border border-transparent text-sm font-medium rounded-lg text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 shadow-md hover:shadow-lg">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
-                </svg>
-                Gadai Baru
-            </a>
-        </div>
-        @endcan
+
     </div>
 
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">

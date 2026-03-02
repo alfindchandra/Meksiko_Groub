@@ -20,14 +20,18 @@ class NotificationBell extends Component
 
     public function loadNotifications()
     {
-        $this->notifications = Notification::where('user_id', auth()->id())
-            ->latest()
-            ->take(5)
-            ->get();
+        $query = Notification::query();
+        if (!auth()->user()->isAdminPusat()) {
+            $query->where('user_id', auth()->id());
+        }
 
-        $this->unreadCount = Notification::where('user_id', auth()->id())
-            ->where('is_read', false)
-            ->count();
+        $this->notifications = $query->latest()->take(5)->get();
+
+        $countQuery = Notification::where('is_read', false);
+        if (!auth()->user()->isAdminPusat()) {
+            $countQuery->where('user_id', auth()->id());
+        }
+        $this->unreadCount = $countQuery->count();
     }
 
     public function toggleDropdown()
@@ -38,7 +42,7 @@ class NotificationBell extends Component
     public function markAsRead($notificationId)
     {
         $notification = Notification::find($notificationId);
-        if ($notification && $notification->user_id === auth()->id()) {
+        if ($notification && (auth()->user()->isAdminPusat() || $notification->user_id === auth()->id())) {
             $notification->update([
                 'is_read' => true,
                 'read_at' => now(),
@@ -49,12 +53,15 @@ class NotificationBell extends Component
 
     public function markAllAsRead()
     {
-        Notification::where('user_id', auth()->id())
-            ->where('is_read', false)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
+        $query = Notification::where('is_read', false);
+        if (!auth()->user()->isAdminPusat()) {
+            $query->where('user_id', auth()->id());
+        }
+        
+        $query->update([
+            'is_read' => true,
+            'read_at' => now(),
+        ]);
         
         $this->loadNotifications();
     }

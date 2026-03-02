@@ -18,6 +18,7 @@ use App\Livewire\Admin\Reports\SalesReport;
 use App\Livewire\Admin\Reports\InventoryReport;
 use App\Livewire\Admin\Reports\PawnReport;
 use App\Livewire\Admin\Reports\ComparisonReport;
+use App\Livewire\Admin\Reports\CleanReport;
 use App\Livewire\Auditor\AuditorDashboard;
 use App\Livewire\Audit\CreateAudit;
 use App\Livewire\Pos\PointOfSale;
@@ -60,6 +61,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return redirect()->route('admin.dashboard');
     } 
 
+    if ($user->isMeksikoClean()) {
+        return redirect()->route('meksikoclean.dashboard');
+    }
+    if ($user->isPegadaian()) {
+        return redirect()->route('pegadaian.dashboard');
+    }
+
     if ($user->isAuditor()) {
         return redirect()->route('auditor.dashboard');
     }
@@ -67,6 +75,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Default jika bukan Admin atau Auditor (misal: Outlet)
     return redirect()->route('outlet.dashboard');
 })->name('dashboard');
+
+Route::prefix('meksiko-clean')->name('meksikoclean.')->group(function () {
+    Route::get('/dashboard', \App\Livewire\MeksikoClean\Dashboard::class)->name('dashboard');
+    Route::get('/services', \App\Livewire\MeksikoClean\ServiceList::class)->name('services.index');
+    Route::get('/partners', \App\Livewire\MeksikoClean\PartnerList::class)->name('partners.index');
+    Route::get('/transactions', \App\Livewire\MeksikoClean\TransactionList::class)->name('transactions.index');
+    Route::get('/transactions/create', \App\Livewire\MeksikoClean\CreateTransaction::class)->name('transactions.create');
+});
 
 // Route untuk Auditor yang Anda sebutkan di atas
 Route::get('/auditor/dashboard', AuditorDashboard::class)
@@ -89,6 +105,7 @@ Route::get('/auditor/dashboard', AuditorDashboard::class)
         Route::get('/inventory', InventoryReport::class)->name('inventory');
         Route::get('/pawn', PawnReport::class)->name('pawn');
         Route::get('/comparison', ComparisonReport::class)->name('comparison');
+        Route::get('/clean', CleanReport::class)->name('clean');
     });
     Route::get('/outlet/dashboard', OutletDashboard::class)
         ->name('outlet.dashboard');
@@ -121,7 +138,7 @@ Route::get('/auditor/dashboard', AuditorDashboard::class)
         })->name('detail');
         Route::get('/send/{transferId}', SendTransfer::class)->name('send');
         
-        Route::middleware('can:approve-transfers')->group(function () {
+        Route::middleware('can:manage-audit')->group(function () {
             Route::get('/pending', function () {
                 return view('transfer.pending');
             })->name('pending');

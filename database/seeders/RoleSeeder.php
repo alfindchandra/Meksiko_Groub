@@ -30,6 +30,11 @@ class RoleSeeder extends Seeder
                 'display_name' => 'Pegadaian',
                 'description' => 'Mengelola transaksi pegadaian',
             ],
+            [
+                'name' => 'meksiko_clean',
+                'display_name' => 'Meksiko Clean',
+                'description' => 'Manajemen operasional Meksiko Clean',
+            ],
         ];
 
         foreach ($roles as $role) {

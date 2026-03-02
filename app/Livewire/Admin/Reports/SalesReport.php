@@ -40,8 +40,10 @@ class SalesReport extends Component
 
     public function render()
     {
+        $endDate = $this->dateTo . ' 23:59:59';
+
         $query = Sale::with(['outlet', 'items.product'])
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo]);
+            ->whereBetween('created_at', [$this->dateFrom, $endDate]);
 
         if ($this->selectedOutlet) {
             $query->where('outlet_id', $this->selectedOutlet);
@@ -64,7 +66,7 @@ class SalesReport extends Component
                 DB::raw('COUNT(*) as transactions'),
                 DB::raw('SUM(total) as revenue')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('date')
             ->orderBy('date')
@@ -72,7 +74,7 @@ class SalesReport extends Component
 
         // Sales by payment method
         $paymentMethods = Sale::select('payment_method', DB::raw('COUNT(*) as count'), DB::raw('SUM(total) as total'))
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('payment_method')
             ->get();
@@ -81,7 +83,7 @@ class SalesReport extends Component
         $topProducts = DB::table('sale_items')
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->whereBetween('sales.created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('sales.created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('sales.outlet_id', $this->selectedOutlet))
             ->select(
                 'products.name',
@@ -99,7 +101,7 @@ class SalesReport extends Component
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->whereBetween('sales.created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('sales.created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('sales.outlet_id', $this->selectedOutlet))
             ->select(
                 'categories.name',
@@ -114,7 +116,7 @@ class SalesReport extends Component
                 DB::raw('HOUR(created_at) as hour'),
                 DB::raw('COUNT(*) as transactions')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->when($this->selectedOutlet, fn($q) => $q->where('outlet_id', $this->selectedOutlet))
             ->groupBy('hour')
             ->orderBy('hour')
@@ -141,3 +143,4 @@ class SalesReport extends Component
         ])->layout('layouts.app');
     }
 }
+ 

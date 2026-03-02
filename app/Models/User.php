@@ -71,6 +71,11 @@ class User extends Authenticatable
     return $this->role->isPegadaian();
 }
 
+    public function isMeksikoClean(): bool
+    {
+        return $this->role->isMeksikoClean();
+    }
+
     public function canAccessOutlet(int $outletId): bool
     {
         return $this->isAdminPusat() || $this->outlet_id === $outletId;

@@ -41,13 +41,15 @@ class ComparisonReport extends Component
 
     public function render()
     {
+        $endDate = $this->dateTo . ' 23:59:59';
+
         // Sales comparison by outlet
         $outletComparison = Sale::select(
                 'outlet_id',
                 DB::raw('COUNT(*) as transactions'),
                 DB::raw('SUM(total) as revenue')
             )
-            ->whereBetween('created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('created_at', [$this->dateFrom, $endDate])
             ->with('outlet')
             ->groupBy('outlet_id')
             ->get();
@@ -72,7 +74,7 @@ class ComparisonReport extends Component
             ->join('products', 'sale_items.product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->join('sales', 'sale_items.sale_id', '=', 'sales.id')
-            ->whereBetween('sales.created_at', [$this->dateFrom, $this->dateTo])
+            ->whereBetween('sales.created_at', [$this->dateFrom, $endDate])
             ->select(
                 'categories.name',
                 DB::raw('SUM(sale_items.quantity) as total_qty'),

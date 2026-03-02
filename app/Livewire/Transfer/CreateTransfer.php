@@ -201,7 +201,7 @@ class CreateTransfer extends Component
                 'message' => "Transfer {$transferNumber} berhasil dibuat dan menunggu persetujuan!"
             ]);
 
-            return redirect()->route('transfer.detail', $transfer->id);
+            return redirect()->route('transfer.create');
 
         } catch (\Exception $e) {
             DB::rollBack();

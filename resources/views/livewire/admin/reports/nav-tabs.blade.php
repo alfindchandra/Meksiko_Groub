@@ -34,4 +34,12 @@
                   : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
         📈 Komparasi
     </a>
+
+    <a href="{{ route('admin.reports.clean') }}" 
+       class="flex flex-1 items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all whitespace-nowrap
+              {{ $currentRoute === 'admin.reports.clean' 
+                  ? 'bg-cyan-50 text-cyan-600 shadow-sm ring-1 ring-cyan-100' 
+                  : 'text-gray-500 hover:bg-gray-50 hover:text-gray-900' }}">
+        ✨ Clean
+    </a>
 </div>

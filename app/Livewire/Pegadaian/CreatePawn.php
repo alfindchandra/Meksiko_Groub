@@ -59,6 +59,45 @@ class CreatePawn extends Component
         'notes' => 'nullable|string',
     ];
 
+    protected $messages = [
+        'customer_name.required' => 'Nama nasabah wajib diisi.',
+        'customer_name.max' => 'Nama nasabah tidak boleh lebih dari 255 karakter.',
+        'customer_id_number.required' => 'Nomor identitas (KTP) wajib diisi.',
+        'customer_id_number.max' => 'Nomor identitas maksimal 20 karakter.',
+        'customer_phone.required' => 'Nomor telepon wajib diisi.',
+        'customer_phone.max' => 'Nomor telepon maksimal 20 karakter.',
+        'customer_address.required' => 'Alamat nasabah wajib diisi.',
+        'item_name.required' => 'Nama barang wajib diisi.',
+        'item_name.max' => 'Nama barang maksimal 255 karakter.',
+        'item_category.required' => 'Kategori barang wajib dipilih.',
+        'item_description.required' => 'Deskripsi barang wajib diisi.',
+        'item_weight.numeric' => 'Berat barang harus berupa angka.',
+        'item_weight.min' => 'Berat barang tidak boleh kurang dari 0.',
+        'item_photos.*.image' => 'File harus berupa gambar.',
+        'item_photos.*.max' => 'Ukuran gambar tidak boleh lebih dari 2MB.',
+        'appraisal_value.required' => 'Nilai taksiran wajib diisi.',
+        'appraisal_value.numeric' => 'Nilai taksiran harus berupa angka.',
+        'appraisal_value.min' => 'Nilai taksiran tidak boleh bernilai negatif.',
+        'loan_amount.required' => 'Nominal pinjaman wajib diisi.',
+        'loan_amount.numeric' => 'Nominal pinjaman harus berupa angka.',
+        'loan_amount.min' => 'Nominal pinjaman tidak boleh bernilai negatif.',
+        'admin_fee.required' => 'Biaya admin wajib diisi.',
+        'admin_fee.numeric' => 'Biaya admin harus berupa angka.',
+        'admin_fee.min' => 'Biaya admin tidak boleh bernilai negatif.',
+        'interest_rate.required' => 'Suku bunga wajib diisi.',
+        'interest_rate.numeric' => 'Suku bunga harus berupa angka.',
+        'interest_rate.min' => 'Suku bunga minimal 0%.',
+        'interest_rate.max' => 'Suku bunga maksimal 100%.',
+        'loan_period_days.required' => 'Tenor pinjaman (hari) wajib diisi.',
+        'loan_period_days.integer' => 'Tenor pinjaman harus berupa angka bulat.',
+        'loan_period_days.min' => 'Tenor pinjaman minimal 1 hari.',
+        'start_date.required' => 'Tanggal pinjaman wajib diisi.',
+        'start_date.date' => 'Format tanggal tidak valid.',
+        'appraisal_value.required' => 'Nilai taksiran wajib diisi.',
+        'appraisal_value.numeric' => 'Nilai taksiran harus berupa angka.',
+        'appraisal_value.min' => 'Nilai taksiran tidak boleh bernilai negatif.',
+    ];
+
     public function mount()
     {
         $this->start_date = now()->format('Y-m-d');
@@ -126,7 +165,7 @@ class CreatePawn extends Component
                 }
             }
 
-            PawnTransaction::create([
+            $pawn = PawnTransaction::create([
                 ...$validated,
                 'pawn_number' => $pawnNumber,
                 'outlet_id' => auth()->user()->outlet_id,
@@ -137,6 +176,27 @@ class CreatePawn extends Component
                 'total_interest' => $this->total_interest,
                 'total_payment' => $this->total_payment,
             ]);
+
+            // Notify Admins
+            try {
+                $adminUsers = \App\Models\User::whereHas('role', function ($query) {
+                    $query->where('name', 'admin_pusat');
+                })->get();
+
+                foreach ($adminUsers as $admin) {
+                    \App\Models\Notification::create([
+                        'user_id' => $admin->id,
+                        'type' => 'pawn_created',
+                        'title' => 'Gadai Baru',
+                        'message' => "Transaksi gadai baru {$pawnNumber} dibuat oleh " . auth()->user()->name,
+                        'reference_type' => 'PawnTransaction',
+                        'reference_id' => $pawn->id,
+                        'is_read' => false,
+                    ]);
+                }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Failed to send pawn notification: ' . $e->getMessage());
+            }
 
             DB::commit();
             return redirect()->route('pegadaian.list');

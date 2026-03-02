@@ -19,10 +19,10 @@
     
    <div x-data="{ sidebarOpen: false, sidebarMinimized: false }" class="relative flex h-screen overflow-hidden bg-gray-50">
     
-    @include('layouts.sidebar')
+    @include('livewire.layout.sidebar')
 
     <div class="flex flex-col flex-1 min-w-0 overflow-hidden">
-        @include('layouts.navigation')
+        @include('livewire.layout.navigation')
 
         <main class="flex-1 overflow-y-auto focus:outline-none">
             <div class="py-6 px-4 sm:px-6 lg:px-8">
@@ -33,7 +33,6 @@
     </div>
 </div>
 
-    @include('livewire.components.notifications')
     @livewireScripts
     @stack('scripts')
 </body>

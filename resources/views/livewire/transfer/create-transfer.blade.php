@@ -6,7 +6,7 @@
             <div>
                 <h2 class="text-3xl font-extrabold text-gray-900 tracking-tight">Buat Transfer Baru</h2>
                 <p class="mt-2 text-sm text-gray-500">
-                    @if(auth()->user()->isKepalaRuko())
+                    @if(auth()->user()->isRider())
                         Ajukan permintaan barang dari gudang pusat ke outlet Anda
                     @else
                         Transfer barang antar outlet atau gudang
@@ -37,7 +37,7 @@
                             <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 ml-1">Dari Outlet</label>
                             <select wire:model.live="fromOutletId" 
                                     class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition-all sm:text-sm py-3"
-                                    @if(auth()->user()->isKepalaRuko()) disabled @endif>
+                                    @if(auth()->user()->isRider()) disabled @endif>
                                 <option value="">Pilih Outlet Asal</option>
                                 @foreach($fromOutlets as $outlet)
                                 <option value="{{ $outlet->id }}">
@@ -52,7 +52,7 @@
                             <label class="block text-xs font-semibold uppercase tracking-wider text-gray-500 mb-2 ml-1">Ke Outlet</label>
                             <select wire:model="toOutletId" 
                                     class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500 transition-all sm:text-sm py-3"
-                                    @if(auth()->user()->isKepalaRuko()) disabled @endif>
+                                    @if(auth()->user()->isRider()) disabled @endif>
                                 <option value="">Pilih Outlet Tujuan</option>
                                 @foreach($toOutlets as $outlet)
                                 <option value="{{ $outlet->id }}">{{ $outlet->name }}</option>
@@ -62,7 +62,7 @@
                         </div>
                     </div>
 
-                    @if(auth()->user()->isKepalaRuko())
+                    @if(auth()->user()->isRider())
                     <div class="mt-6 flex items-center p-4 bg-amber-50 rounded-xl border border-amber-100">
                         <svg class="w-5 h-5 text-amber-600 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M18 10a8 8 0 11-16 0 8 8 0 0118 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" fill-rule="evenodd" clip-rule="evenodd"/></svg>
                         <p class="text-sm text-amber-800 font-medium">Anda hanya dapat meminta stok dari Gudang Pusat.</p>

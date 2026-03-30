@@ -20,7 +20,7 @@ class PendingTransferBadge extends Component
     {
         $query = StockTransfer::where('status', 'pending');
 
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query->where('to_outlet_id', auth()->user()->outlet_id);
         }
 

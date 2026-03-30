@@ -20,7 +20,7 @@ class LowStockBadge extends Component
     {
         $query = Stock::with('product')->get();
 
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query = $query->where('outlet_id', auth()->user()->outlet_id);
         }
 

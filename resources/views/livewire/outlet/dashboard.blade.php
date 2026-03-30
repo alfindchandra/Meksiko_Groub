@@ -188,7 +188,7 @@
             <div class="p-5">
                 <div class="flow-root">
                     <ul role="list" class="-mb-8">
-                        @forelse($recentActivity as $transfer)
+                        @forelse($recentActivity as $activity)
                         <li>
                             <div class="relative pb-8">
                                 @if (!$loop->last)
@@ -196,32 +196,66 @@
                                 @endif
                                 <div class="relative flex space-x-3">
                                     <div>
-                                        <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white
-                                            @if($transfer->status === 'received') bg-emerald-100 text-emerald-600
-                                            @elseif($transfer->status === 'pending') bg-amber-100 text-amber-600
-                                            @else bg-blue-100 text-blue-600 @endif">
-                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-                                        </span>
+                                        @if($activity->type === 'transfer')
+                                            <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white
+                                                @if($activity->status === 'received') bg-emerald-100 text-emerald-600
+                                                @elseif($activity->status === 'pending') bg-amber-100 text-amber-600
+                                                @else bg-blue-100 text-blue-600 @endif">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                                            </span>
+                                        @elseif($activity->type === 'sale')
+                                            <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-emerald-100 text-emerald-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                            </span>
+                                        @elseif($activity->type === 'audit')
+                                            <span class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white bg-purple-100 text-purple-600">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                            </span>
+                                        @endif
                                     </div>
                                     <div class="min-w-0 flex-1 py-1.5 flex justify-between space-x-4">
                                         <div>
                                             <p class="text-sm font-bold text-gray-900">
-                                                {{ $transfer->transfer_number }} 
-                                                <span class="font-normal text-gray-500">
-                                                    dari {{ $transfer->fromOutlet->name }}
-                                                </span>
+                                                @if($activity->type === 'transfer')
+                                                    {{ $activity->title }}
+                                                    <span class="font-normal text-gray-500">{{ $activity->description }}</span>
+                                                @elseif($activity->type === 'sale')
+                                                    <span class="text-emerald-600">📊 Penjualan</span>
+                                                    <span class="font-normal text-gray-500">{{ $activity->title }}</span>
+                                                @elseif($activity->type === 'audit')
+                                                    <span class="text-purple-600">✓ Audit</span>
+                                                    <span class="font-normal text-gray-500">{{ $activity->title }}</span>
+                                                @endif
                                             </p>
-                                            <div class="mt-1 flex items-center gap-2">
+                                            <div class="mt-1 flex items-center gap-2 flex-wrap">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider
-                                                    @if($transfer->status === 'pending') bg-amber-50 text-amber-700
-                                                    @elseif($transfer->status === 'received') bg-emerald-50 text-emerald-700
-                                                    @else bg-blue-50 text-blue-700 @endif">
-                                                    {{ $transfer->status }}
+                                                    @if($activity->type === 'transfer' && $activity->status === 'pending') bg-amber-50 text-amber-700
+                                                    @elseif($activity->type === 'transfer' && $activity->status === 'received') bg-emerald-50 text-emerald-700
+                                                    @elseif($activity->type === 'transfer') bg-blue-50 text-blue-700
+                                                    @elseif($activity->type === 'sale') bg-emerald-50 text-emerald-700
+                                                    @elseif($activity->type === 'audit') bg-purple-50 text-purple-700
+                                                    @endif">
+                                                    @if($activity->type === 'transfer')
+                                                        {{ $activity->status }}
+                                                    @elseif($activity->type === 'sale')
+                                                        @if(isset($activity->total))
+                                                            Rp {{ number_format($activity->total, 0, ',', '.') }}
+                                                        @else
+                                                            Selesai
+                                                        @endif
+                                                    @elseif($activity->type === 'audit')
+                                                        {{ $activity->description }}
+                                                    @endif
                                                 </span>
+                                                @if($activity->type === 'sale')
+                                                    <span class="text-[10px] text-gray-500">
+                                                        {{ $activity->description }}
+                                                    </span>
+                                                @endif
                                             </div>
                                         </div>
                                         <div class="text-right text-xs whitespace-nowrap text-gray-400 italic">
-                                            {{ $transfer->created_at->diffForHumans() }}
+                                            {{ $activity->created_at->diffForHumans() }}
                                         </div>
                                     </div>
                                 </div>

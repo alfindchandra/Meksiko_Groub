@@ -38,8 +38,8 @@ class CreateTransfer extends Component
 
     public function mount()
     {
-        // KEPALA RUKO: Hanya bisa request dari warehouse
-        if (auth()->user()->isKepalaRuko()) {
+        // RIDER: Hanya bisa request dari warehouse
+        if (auth()->user()->isRider()) {
             $warehouse = Outlet::where('type', 'warehouse')->first();
             $this->fromOutletId = $warehouse?->id ?? '';
             $this->toOutletId = auth()->user()->outlet_id;
@@ -224,8 +224,8 @@ class CreateTransfer extends Component
         $fromOutlets = $allOutlets->where('id', '!=', $this->toOutletId);
         $toOutlets = $allOutlets->where('id', '!=', $this->fromOutletId);
         
-    } elseif (auth()->user()->isKepalaRuko()) {
-        // Kepala Ruko: Dari Gudang ke Outlet milik sendiri
+    } elseif (auth()->user()->isRider()) {
+        // Rider: Dari Gudang ke Outlet milik sendiri
         $fromOutlets = $allOutlets->where('type', 'warehouse')
                                   ->where('id', '!=', $this->toOutletId);
                                   

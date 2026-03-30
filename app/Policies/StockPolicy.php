@@ -19,9 +19,9 @@ class StockPolicy
 
     public function update(User $user, Stock $stock): bool
     {
-        // Hanya admin atau kepala ruko dari outlet tersebut
+        // Hanya admin atau rider dari outlet tersebut
         return $user->isAdminPusat() || 
-               ($user->isKepalaRuko() && $user->outlet_id === $stock->outlet_id);
+               ($user->isRider() && $user->outlet_id === $stock->outlet_id);
     }
 
     public function adjustStock(User $user, Stock $stock): bool

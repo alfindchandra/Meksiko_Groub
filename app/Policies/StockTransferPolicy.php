@@ -26,7 +26,7 @@ class StockTransferPolicy
 
     public function create(User $user): bool
     {
-        return $user->isAdminPusat() || $user->isKepalaRuko();
+        return $user->isAdminPusat() || $user->isRider();
     }
 
     public function approve(User $user, StockTransfer $transfer): bool
@@ -40,8 +40,8 @@ class StockTransferPolicy
             return true;
         }
 
-        // Kepala ruko hanya bisa approve jika transfer masuk ke outlet mereka
-        return $user->isKepalaRuko() && $transfer->to_outlet_id === $user->outlet_id;
+        // Rider hanya bisa approve jika transfer masuk ke outlet mereka
+        return $user->isRider() && $transfer->to_outlet_id === $user->outlet_id;
     }
 
     public function send(User $user, StockTransfer $transfer): bool
@@ -55,8 +55,8 @@ class StockTransferPolicy
             return true;
         }
 
-        // Hanya Kepala Ruko dari outlet pengirim yang bisa mengirim
-        return $user->isKepalaRuko() && $user->outlet_id === $transfer->from_outlet_id;
+        // Hanya Rider dari outlet pengirim yang bisa mengirim
+        return $user->isRider() && $user->outlet_id === $transfer->from_outlet_id;
     }
 
     public function receive(User $user, StockTransfer $transfer): bool
@@ -70,8 +70,8 @@ class StockTransferPolicy
             return true;
         }
 
-        // Hanya Kepala Ruko dari outlet penerima yang bisa menerima
-        return $user->isKepalaRuko() && $user->outlet_id === $transfer->to_outlet_id;
+        // Hanya Rider dari outlet penerima yang bisa menerima
+        return $user->isRider() && $user->outlet_id === $transfer->to_outlet_id;
     }
 
     public function delete(User $user, StockTransfer $transfer): bool

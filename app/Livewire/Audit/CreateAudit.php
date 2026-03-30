@@ -42,7 +42,7 @@ class CreateAudit extends Component
 
     public function mount()
     {
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $this->outletId = auth()->user()->outlet_id;
         }
         $this->auditDate = today()->format('Y-m-d');
@@ -259,7 +259,7 @@ class CreateAudit extends Component
     {
         $outlets = Outlet::active()->get();
         
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $outlets = $outlets->where('id', auth()->user()->outlet_id);
         }
 

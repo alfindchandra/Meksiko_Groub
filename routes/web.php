@@ -5,6 +5,7 @@ use App\Livewire\Admin\UserManagement;
 use App\Livewire\Outlet\Dashboard as OutletDashboard;
 use App\Livewire\Stock\StockList;
 use App\Livewire\Stock\LowStockAlert;
+use App\Livewire\Stock\StockDetail;
 use App\Livewire\Transfer\TransferList;
 use App\Livewire\Transfer\SendTransfer;
 use App\Livewire\Transfer\CreateTransfer;
@@ -114,6 +115,7 @@ Route::get('/auditor/dashboard', AuditorDashboard::class)
     Route::prefix('stock')->name('stock.')->group(function () {
         Route::get('/list', StockList::class)->name('list');
         Route::get('/low-stock', LowStockAlert::class)->name('low-stock');
+        Route::get('/{id}', StockDetail::class)->name('detail');
     });
 
     // Transfer Routes
@@ -155,7 +157,7 @@ Route::get('/auditor/dashboard', AuditorDashboard::class)
     });
 
     // Audit Routes
-    Route::prefix('audit')->name('audit.')->middleware('can:conduct-audit')->group(function () {
+    Route::prefix('audit')->name('audit.')->middleware('can:manage-audit')->group(function () {
         Route::get('/list', AuditList::class)->name('list');
         Route::get('/create', CreateAudit::class)->name('create');
     });

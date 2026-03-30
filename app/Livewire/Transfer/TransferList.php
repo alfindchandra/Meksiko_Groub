@@ -44,7 +44,7 @@ class TransferList extends Component
             ->latest();
 
         // Filter by user access
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query->where(function($q) {
                 $q->where('from_outlet_id', auth()->user()->outlet_id)
                   ->orWhere('to_outlet_id', auth()->user()->outlet_id);

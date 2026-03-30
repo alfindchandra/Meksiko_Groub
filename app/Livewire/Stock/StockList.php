@@ -3,7 +3,6 @@
 namespace App\Livewire\Stock;
 
 use App\Models\Stock;
-use App\Models\StockHistory;
 use App\Models\Outlet;
 use App\Models\Category;
 use Livewire\Component;
@@ -20,44 +19,15 @@ class StockList extends Component
     public $sortDirection = 'asc';
     public $perPage = 15;
 
-    // Detail Modal
-    public $showDetailModal = false;
-    public $selectedStock = null;
-    public $stockHistories = [];
-
     protected $queryString = [
         'search' => ['except' => ''],
         'selectedOutlet' => ['except' => ''],
         'selectedCategory' => ['except' => ''],
     ];
 
-    protected $listeners = ['openStockDetail'];
-
     public function updatingSearch()
     {
         $this->resetPage();
-    }
-
-    public function openStockDetail($stockId)
-    {
-        $this->selectedStock = Stock::with(['product.category', 'outlet'])
-            ->findOrFail($stockId);
-
-        $this->stockHistories = StockHistory::with(['user'])
-            ->where('product_id', $this->selectedStock->product_id)
-            ->where('outlet_id', $this->selectedStock->outlet_id)
-            ->latest()
-            ->take(10)
-            ->get();
-
-        $this->showDetailModal = true;
-    }
-
-    public function closeDetailModal()
-    {
-        $this->showDetailModal = false;
-        $this->selectedStock = null;
-        $this->stockHistories = [];
     }
 
     public function sortBy($field)
@@ -75,7 +45,7 @@ class StockList extends Component
         $query = Stock::with(['product.category', 'outlet']);
 
         // Filter by outlet
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query->where('outlet_id', auth()->user()->outlet_id);
         } elseif ($this->selectedOutlet) {
             $query->where('outlet_id', $this->selectedOutlet);

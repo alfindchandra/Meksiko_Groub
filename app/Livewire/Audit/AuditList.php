@@ -35,7 +35,7 @@ class AuditList extends Component
             ->latest('audited_at');
 
         // Filter by user access
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query->where('outlet_id', auth()->user()->outlet_id);
         } elseif ($this->outletFilter) {
             $query->where('outlet_id', $this->outletFilter);

@@ -24,8 +24,8 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700">Outlet Target</label>
                             <select wire:model.live="outletId" 
-                                    class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @if(auth()->user()->isKepalaRuko()) bg-gray-100 @endif"
-                                    @if(auth()->user()->isKepalaRuko()) disabled @endif>
+                                    class="mt-1 block w-full rounded-xl border-gray-300 shadow-sm focus:ring-indigo-500 focus:border-indigo-500 @if(auth()->user()->isRider()) bg-gray-100 @endif"
+                                    @if(auth()->user()->isRider()) disabled @endif>
                                 <option value="">Pilih Outlet</option>
                                 @foreach($outlets as $outlet)
                                     <option value="{{ $outlet->id }}">{{ $outlet->name }} ({{ $outlet->code }})</option>

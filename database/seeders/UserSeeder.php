@@ -13,7 +13,7 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         $adminRole = Role::where('name', 'admin_pusat')->first();
-        $kepalaRole = Role::where('name', 'kepala_ruko')->first();
+        $kepalaRole = Role::where('name', 'rider')->first();
         $staffRole = Role::where('name', 'staff_gudang')->first();
 
         $warehouse = Outlet::where('type', 'warehouse')->first();
@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Kepala Ruko dander',
+            'name' => 'Rider dander',
             'email' => 'dander@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,
@@ -37,7 +37,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Kepala Ruko bubulan',
+            'name' => 'Rider bubulan',
             'email' => 'Bubulan@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,

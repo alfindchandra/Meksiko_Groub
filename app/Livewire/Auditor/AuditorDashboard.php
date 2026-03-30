@@ -29,7 +29,7 @@ class AuditorDashboard extends Component
     $stockHistories = StockHistory::with(['product', 'outlet', 'user'])
         ->whereBetween('created_at', $dateRange)
         ->latest()
-        ->take(30)
+        ->take(10)
         ->get();
 
     // Ambil Data Penjualan Terbaru untuk Auditor

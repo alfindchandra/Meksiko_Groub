@@ -34,7 +34,7 @@ class AuthServiceProvider extends ServiceProvider
             return $user->isAuditor() || $user->isAdminPusat();
         });
         Gate::define('view-audit', function ($user) {
-            return $user->isAuditor() || $user->isAdminPusat() || $user->isKepalaRuko();
+            return $user->isAuditor() || $user->isAdminPusat() || $user->isRider();
         });
         Gate::define('create-pegadaian', function ($user) {
             return $user->isPegadaian();
@@ -44,19 +44,19 @@ class AuthServiceProvider extends ServiceProvider
         });
 
         Gate::define('manage-ruko', function ($user) {
-            return $user->isKepalaRuko();
+            return $user->isRider();
         });
 
         Gate::define('create-transfer', function ($user) {
-            return $user->isKepalaRuko() || $user->isAdminPusat();
+            return $user->isRider() || $user->isAdminPusat();
         });
 
         Gate::define('receive-shipment', function ($user) {
-            return $user->isKepalaRuko() || $user->isStaffGudang();
+            return $user->isRider() || $user->isStaffGudang();
         });
 
         Gate::define('conduct-audit', function ($user) {
-            return $user->isKepalaRuko() || $user->isAdminPusat();
+            return $user->isAuditor();
         });
 
         Gate::define('manage-clean', function ($user) {

@@ -57,9 +57,9 @@ class User extends Authenticatable
         return $this->role->isAdminPusat();
     }
 
-    public function isKepalaRuko(): bool
+    public function isRider(): bool
     {
-        return $this->role->isKepalaRuko();
+        return $this->role->isRider();
     }
 
     public function isAuditor(): bool

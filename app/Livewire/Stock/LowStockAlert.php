@@ -21,7 +21,7 @@ class LowStockAlert extends Component
             ->filter(fn($stock) => $stock->is_low_stock);
 
         // Filter by user access
-        if (auth()->user()->isKepalaRuko()) {
+        if (auth()->user()->isRider()) {
             $query = $query->where('outlet_id', auth()->user()->outlet_id);
         } elseif ($this->outletFilter) {
             $query = $query->where('outlet_id', $this->outletFilter);

@@ -16,8 +16,8 @@ class RoleSeeder extends Seeder
                 'description' => 'Akses penuh ke seluruh sistem',
             ],
             [
-                'name' => 'kepala_ruko',
-                'display_name' => 'Kepala Ruko',
+                'name' => 'rider',
+                'display_name' => 'Rider',
                 'description' => 'Mengelola satu ruko tertentu',
             ],
             [

@@ -44,7 +44,7 @@ class SalesList extends Component
             ->latest('sale_date');
 
         // Filter by outlet (for non-admin)
-        if (auth()->user()->isKepalaRuko() || !auth()->user()->isAdminPusat()) {
+        if (auth()->user()->isRider() || !auth()->user()->isAdminPusat()) {
             $query->where('outlet_id', auth()->user()->outlet_id);
         }
 

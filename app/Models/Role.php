@@ -20,9 +20,9 @@ class Role extends Model
         return $this->name === 'admin_pusat';
     }
 
-    public function isKepalaRuko(): bool
+    public function isRider(): bool
     {
-        return $this->name === 'kepala_ruko';
+        return $this->name === 'rider';
     }
 
     public function isAuditor(): bool

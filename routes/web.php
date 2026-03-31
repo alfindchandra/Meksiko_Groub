@@ -13,7 +13,7 @@ use App\Livewire\Transfer\ApproveTransfer;
 use App\Livewire\Transfer\ReceiveTransfer;
 use App\Livewire\Shipment\ShipmentList;
 use App\Livewire\Audit\AuditList;
-use App\livewire\Pegadaian\PegadaianDashboard;
+use App\Livewire\Pegadaian\PegadaianDashboard;
 use App\Livewire\Sales\SalesList;
 use App\Livewire\Admin\Reports\SalesReport;
 use App\Livewire\Admin\Reports\InventoryReport;

@@ -17,7 +17,7 @@ class StockList extends Component
     public $selectedCategory = '';
     public $sortBy = 'product_name';
     public $sortDirection = 'asc';
-    public $perPage = 15;
+    public $perPage = 25;
 
     protected $queryString = [
         'search' => ['except' => ''],

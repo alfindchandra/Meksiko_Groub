@@ -51,10 +51,13 @@ class CreateAudit extends Component
     public function updatedSearchProduct()
     {
         if (strlen($this->searchProduct) >= 2) {
-            $this->availableProducts = Product::where('name', 'like', '%' . $this->searchProduct . '%')
-                ->orWhere('sku', 'like', '%' . $this->searchProduct . '%')
-                ->limit(10)
-                ->get();
+            $this->availableProducts = Product::where(function ($query) {
+        $query->where('name', 'like', '%' . $this->searchProduct . '%')
+              ->orWhere('sku', 'like', '%' . $this->searchProduct . '%');
+    })
+    ->orderBy('name', 'asc') 
+    ->limit(10)
+    ->get();
             $this->showProductSearch = true;
         } else {
             $this->availableProducts = [];
@@ -118,39 +121,42 @@ class CreateAudit extends Component
         }
     }
 
-    public function loadAllProducts()
-    {
-        if (!$this->outletId) {
-            $this->dispatch('notify', [
-                'type' => 'error',
-                'message' => 'Pilih outlet terlebih dahulu'
-            ]);
-            return;
-        }
-
-        $stocks = Stock::where('outlet_id', $this->outletId)
-            ->with('product')
-            ->get();
-
-        $this->selectedProducts = [];
-        foreach ($stocks as $stock) {
-            $this->selectedProducts[] = [
-                'product_id' => $stock->product->id,
-                'product_name' => $stock->product->name,
-                'product_sku' => $stock->product->sku,
-                'system_quantity' => $stock->quantity,
-                'physical_quantity' => $stock->quantity,
-                'difference' => 0,
-                'reason' => '',
-                'unit' => $stock->product->unit,
-            ];
-        }
-
+   public function loadAllProducts()
+{
+    if (!$this->outletId) {
         $this->dispatch('notify', [
-            'type' => 'success',
-            'message' => 'Semua produk dimuat: ' . count($this->selectedProducts) . ' items'
+            'type' => 'error',
+            'message' => 'Pilih outlet terlebih dahulu'
         ]);
+        return;
     }
+
+    $stocks = Stock::where('outlet_id', $this->outletId)
+        ->with('product')
+        ->get()
+        ->sortBy(function($stock) {
+            return $stock->product->name; // Mengurutkan Collection dari A-Z
+        });
+
+    $this->selectedProducts = [];
+    foreach ($stocks as $stock) {
+        $this->selectedProducts[] = [
+            'product_id' => $stock->product->id,
+            'product_name' => $stock->product->name,
+            'product_sku' => $stock->product->sku,
+            'system_quantity' => $stock->quantity,
+            'physical_quantity' => $stock->quantity,
+            'difference' => 0,
+            'reason' => '',
+            'unit' => $stock->product->unit,
+        ];
+    }
+
+    $this->dispatch('notify', [
+        'type' => 'success',
+        'message' => 'Semua produk dimuat: ' . count($this->selectedProducts) . ' items'
+    ]);
+}
 
     public function submit()
     {

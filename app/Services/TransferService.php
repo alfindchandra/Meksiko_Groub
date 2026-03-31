@@ -114,11 +114,13 @@ class TransferService
                 );
             }
 
+            // Get stock before any changes (total physical stock before reservation release)
+            $quantityBefore = $stock->quantity + $stock->reserved;
+
             // Release reservation first
             $stock->releaseReservation($item->quantity_requested);
 
             // Deduct actual stock
-            $quantityBefore = $stock->quantity;
             $stock->decrement('quantity', $quantitySent);
 
             // Record history

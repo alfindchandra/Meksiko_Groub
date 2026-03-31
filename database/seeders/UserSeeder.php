@@ -29,7 +29,7 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Rider dander',
+            'name' => 'Kudanil Dander 1',
             'email' => 'dander@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,
@@ -37,8 +37,8 @@ class UserSeeder extends Seeder
         ]);
 
         User::create([
-            'name' => 'Rider bubulan',
-            'email' => 'Bubulan@meksiko.com',
+            'name' => 'Dodik kalitidu',
+            'email' => 'Kalitidu@meksiko.com',
             'password' => Hash::make('password'),
             'role_id' => $kepalaRole->id,
             'outlet_id' => $ruko2->id,

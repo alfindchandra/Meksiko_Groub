@@ -121,41 +121,43 @@ class CreateAudit extends Component
         }
     }
 
-   public function loadAllProducts()
+ public function loadAllProducts()
 {
     if (!$this->outletId) {
-        $this->dispatch('notify', [
-            'type' => 'error',
-            'message' => 'Pilih outlet terlebih dahulu'
-        ]);
+        $this->addError('outletId', 'Pilih outlet terlebih dahulu');
         return;
     }
 
-    $stocks = Stock::where('outlet_id', $this->outletId)
-        ->with('product')
-        ->get()
-        ->sortBy(function($stock) {
-            return $stock->product->name; // Mengurutkan Collection dari A-Z
-        });
+    $allProducts = Product::orderBy('name', 'asc')->get();
 
-    $this->selectedProducts = [];
-    foreach ($stocks as $stock) {
-        $this->selectedProducts[] = [
-            'product_id' => $stock->product->id,
-            'product_name' => $stock->product->name,
-            'product_sku' => $stock->product->sku,
-            'system_quantity' => $stock->quantity,
-            'physical_quantity' => $stock->quantity,
-            'difference' => 0,
-            'reason' => '',
-            'unit' => $stock->product->unit,
-        ];
+    foreach ($allProducts as $product) {
+        $exists = collect($this->selectedProducts)->contains('product_id', $product->id);
+
+        if (!$exists) {
+            $stock = Stock::where('product_id', $product->id)
+                ->where('outlet_id', $this->outletId)
+                ->first();
+
+            $systemQuantity = $stock ? $stock->quantity : 0;
+
+            $this->selectedProducts[] = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'product_sku' => $product->sku,
+                'system_quantity' => $systemQuantity,
+                'physical_quantity' => $systemQuantity,
+                'difference' => 0,
+                'reason' => '',
+                'unit' => $product->unit,
+            ];
+        }
     }
 
-    $this->dispatch('notify', [
-        'type' => 'success',
-        'message' => 'Semua produk dimuat: ' . count($this->selectedProducts) . ' items'
-    ]);
+   
+    $this->selectedProducts = collect($this->selectedProducts)
+        ->sortBy('product_name')
+        ->values()
+        ->all();
 }
 
     public function submit()

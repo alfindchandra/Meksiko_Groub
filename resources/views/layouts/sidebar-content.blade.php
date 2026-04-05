@@ -158,6 +158,7 @@
             </svg>
         </button>
         <div x-show="open && {{ $isMobile ? 'true' : '!sidebarMinimized' }}" x-collapse class="mt-1 ml-8 space-y-1">
+            @can('manage-audit')
             <a href="{{ route('audit.create') }}"
                 class="block px-3 py-2 text-xs font-medium rounded-lg transition-colors {{ request()->routeIs('audit.create') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                 Buat Audit
@@ -166,6 +167,13 @@
                 class="block px-3 py-2 text-xs font-medium rounded-lg transition-colors {{ request()->routeIs('audit.list') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                 Riwayat Audit
             </a>
+            @endcan
+            @can('view-audit')
+            <a href="{{ route('audit.payment') }}"
+                class="block px-3 py-2 text-xs font-medium rounded-lg transition-colors {{ request()->routeIs('audit.payment') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
+                Pembayaran Audit
+            </a>
+            @endcan
         </div>
     </div>
     @endcan

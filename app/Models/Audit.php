@@ -17,6 +17,9 @@ class Audit extends Model
         'reason',
         'notes',
         'audited_at',
+        'status',
+        'proof_of_payment',
+        'payment_amount',
     ];
 
     protected $casts = [

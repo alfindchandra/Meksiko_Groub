@@ -212,6 +212,9 @@ class CreateAudit extends Component
                     );
 
                     // Create audit record
+                    $product = Product::find($item['product_id']);
+                    $paymentAmount = ($item['system_quantity'] - $item['physical_quantity']) * ($product ? $product->price : 0);
+
                     Audit::create([
                         'audit_number' => $auditNumber,
                         'outlet_id' => $this->outletId,
@@ -222,21 +225,12 @@ class CreateAudit extends Component
                         'reason' => $item['reason'] ?? 'Audit adjustment',
                         'notes' => $this->notes,
                         'audited_at' => \Carbon\Carbon::parse($this->auditDate)->setTimeFrom(now()),
+                        'status' => 'pending',
+                        'payment_amount' => $paymentAmount,
                     ]);
 
-                    // Adjust stock based on audit
-                    $adjustmentType = $item['difference'] > 0 ? 'in' : 'out';
-                    $adjustmentQuantity = abs($item['difference']);
-
-                    $stockService->adjustStock(
-                        $item['product_id'],
-                        $this->outletId,
-                        $adjustmentQuantity,
-                        $adjustmentType,
-                        auth()->id(),
-                        "Audit {$auditNumber}: {$item['reason']}"
-                    );
-
+                    // Stock is NO LONGER adjusted immediately. It requires payment/confirmation.
+                    
                     $auditCount++;
                 }
             }

@@ -12,12 +12,21 @@ class StockDetail extends Component
     public $stockHistories;
     public $fromDate;
     public $toDate;
+    public $pendingAudit;
 
     public function mount($id)
     {
         $this->stock = Stock::with(['product.category', 'outlet'])->findOrFail($id);
         $this->fromDate = now()->startOfMonth()->format('Y-m-d');
         $this->toDate = now()->format('Y-m-d');
+        
+        // Fetch the newest pending or submitted audit
+        $this->pendingAudit = \App\Models\Audit::where('product_id', $this->stock->product_id)
+            ->where('outlet_id', $this->stock->outlet_id)
+            ->whereIn('status', ['pending', 'payment_submitted'])
+            ->latest('audited_at')
+            ->first();
+
         $this->loadStockHistories();
     }
 

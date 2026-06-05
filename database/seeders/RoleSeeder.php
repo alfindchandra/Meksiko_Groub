@@ -38,7 +38,14 @@ class RoleSeeder extends Seeder
         ];
 
         foreach ($roles as $role) {
-            Role::create($role);
+            // Menggunakan updateOrCreate agar tidak duplikat berdasarkan kolom 'name'
+            Role::updateOrCreate(
+                ['name' => $role['name']], // Kunci pencarian data unik
+                [
+                    'display_name' => $role['display_name'],
+                    'description' => $role['description'],
+                ]
+            );
         }
     }
 }

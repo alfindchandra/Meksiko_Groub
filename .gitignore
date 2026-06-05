@@ -1,10 +1,12 @@
 /.phpunit.cache
 /node_modules
-/public/build
-/public/hot
+
+/storage/pail
 /public/storage
 /storage/*.key
-/storage/pail
+/storage/*.crt
+/storage/*.csr
+/public/build
 /vendor
 .env
 .env.backup

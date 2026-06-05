@@ -20,7 +20,7 @@
         
 
         <!-- Notifications -->
-        <livewire:components.notification-bell />
+      
 
         <!-- User Profile Dropdown -->
         <div x-data="{ open: false }" class="relative">

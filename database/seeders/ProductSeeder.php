@@ -97,15 +97,17 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $item) {
-            Product::create([
-                'sku'         => $item['sku'],
-                'name'        => $item['name'],
-                'category_id' => $categories[$item['cat']]->id,
-                'price'       => $item['price'],
-                'unit'        => 'botol',
-                'description' => 'Produk kategori ' . $item['cat'],
-                'min_stock'   => 5,
-            ]);
-        }
+    Product::updateOrCreate(
+        ['sku' => $item['sku']], // Kunci pengecekan unik
+        [
+            'name'        => $item['name'],
+            'category_id' => $categories[$item['cat']]->id,
+            'price'       => $item['price'],
+            'unit'        => 'botol',
+            'description' => 'Produk kategori ' . $item['cat'],
+            'min_stock'   => 5,
+        ]
+    );
+}
     }
 }

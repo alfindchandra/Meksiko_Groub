@@ -69,7 +69,10 @@ class OutletSeeder extends Seeder
         ];
 
         foreach ($outlets as $outlet) {
-            Outlet::create($outlet);
-        }
+    Outlet::updateOrCreate(
+        ['code' => $outlet['code']], // Kunci pengecekan unik
+        $outlet
+    );
+}
     }
 }

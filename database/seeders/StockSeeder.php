@@ -15,14 +15,18 @@ class StockSeeder extends Seeder
         $outlets = Outlet::all();
 
         foreach ($outlets as $outlet) {
-            foreach ($products as $product) {
-                Stock::create([
-                    'product_id' => $product->id,
-                    'outlet_id' => $outlet->id,
-                    'quantity' => $outlet->type === 'warehouse' ? rand(50, 100) : rand(10, 20),
-                    'reserved' => 0,
-                ]);
-            }
-        }
+    foreach ($products as $product) {
+        Stock::updateOrCreate(
+            [
+                'product_id' => $product->id,
+                'outlet_id' => $outlet->id,
+            ],
+            [
+                'quantity' => $outlet->type === 'warehouse' ? rand(50, 100) : rand(10, 20),
+                'reserved' => 0,
+            ]
+        );
+    }
+}
     }
 }

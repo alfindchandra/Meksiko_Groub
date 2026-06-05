@@ -15,6 +15,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductSeeder::class,
             StockSeeder::class,
+            McServiceSeeder::class, // <-- WAJIB DITAMBAHKAN DI SINI
         ]);
     }
 }

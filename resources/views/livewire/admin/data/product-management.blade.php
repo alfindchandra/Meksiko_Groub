@@ -195,12 +195,8 @@
                             <div class="space-y-2">
                                 <label class="text-[10px] font-black text-gray-400 uppercase tracking-widest ml-1">Satuan</label>
                                 <select wire:model="unit" class="w-full px-4 py-3 bg-gray-50 border-transparent rounded-2xl focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
-                                    <option value="pcs">Pcs</option>
-                                    <option value="box">Box</option>
-                                    <option value="kg">Kg</option>
-                                    <option value="liter">Liter</option>
-                                    <option value="pack">Pack</option>
-                                    <option value="unit">Unit</option>
+                                    <option value="btl">Btl</option>
+                                    <option value="ctn">Ctn</option>
                                 </select>
                             </div>
 

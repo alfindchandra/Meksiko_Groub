@@ -27,6 +27,7 @@ use App\Livewire\Pegadaian\CreatePawn;
 use App\Livewire\Pegadaian\PawnDetail;
 use App\Livewire\Sales\SalesList;
 use App\Livewire\Pos\PointOfSale;
+use App\Livewire\Pos\AuditorPos;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
@@ -43,6 +44,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/pos/receipt/{sale}', function ($id) {
         return view('pos.receipt', ['saleId' => $id]);
     })->name('pos.receipt');
+
+    // Auditor POS
+    Route::get('/auditor/pos', AuditorPos::class)->name('auditor.pos');
+    Route::get('/auditor/pos/receipt/{saleId}', function ($saleId) {
+        return view('pos.receipt', ['saleId' => $saleId]);
+    })->name('auditor.pos.receipt');
 
     // Admin
     Route::middleware(['can:manage-users'])->group(function () {

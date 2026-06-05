@@ -21,28 +21,60 @@
                 </div>
 
                 @if(strlen($searchProduct) >= 2)
-                <div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-300">
-                    @forelse($products as $product)
-                    <button wire:click="addToCart({{ $product->id }})"
-                            class="group bg-white p-3 rounded-2xl border border-slate-200 hover:border-primary-500 hover:shadow-md transition-all text-left">
-                        <div class="aspect-square bg-slate-50 rounded-xl mb-3 flex items-center justify-center overflow-hidden group-hover:bg-primary-50 transition-colors">
-                            <svg class="w-10 h-10 text-slate-300 group-hover:text-primary-300 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                            </svg>
-                        </div>
-                        <div class="px-1 text-sm">
-                            <h4 class="font-bold text-slate-800 line-clamp-1 group-hover:text-primary-600">{{ $product->name }}</h4>
-                            <p class="text-[10px] text-slate-400 font-medium mb-2 uppercase tracking-wider">{{ $product->sku }}</p>
-                            <div class="flex items-center justify-between">
-                                <span class="text-primary-600 font-extrabold">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+               <div class="flex flex-col gap-1 animate-in fade-in slide-in-from-bottom-4 duration-300">
+                @forelse($products as $product)
+                <button type="button" wire:click="addToCart({{ $product->id }})"
+                        class="group bg-white p-4 rounded-2xl border border-slate-200 hover:border-primary-500 hover:shadow-md transition-all text-left w-full">
+                    
+                    <div class="space-y-2">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                            <div>
+                                <h4 class="font-bold text-slate-800 line-clamp-1 group-hover:text-primary-600">{{ $product->name }}</h4>
+                                <p class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{{ $product->sku }} {{ $product->unit ? '• ' . $product->unit : '' }}</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-primary-600 font-extrabold text-lg">Rp {{ number_format($product->price, 0, ',', '.') }}</span>
+                                @if($product->activeVariants->count() > 0)
+                                <div class="text-[10px] font-bold text-blue-600 mt-1">📦 {{ $product->activeVariants->count() }} Varian</div>
+                                @endif
+                                @if($product->activeDiscountTiers->count() > 0)
+                                <div class="text-[10px] font-bold text-green-600 mt-1">✓ Ada Tier Harga</div>
+                                @endif
                             </div>
                         </div>
-                    </button>
-                    @empty
-                    <div class="col-span-full bg-white rounded-2xl border border-dashed border-slate-300 py-12 text-center">
-                        <p class="text-slate-400 font-medium">Produk tidak ditemukan.</p>
+                        
+                        @if($product->activeVariants->count() > 0)
+                        <div class="bg-blue-50 rounded-lg p-2 border border-blue-100">
+                            <p class="text-[10px] font-bold text-blue-700 mb-1">Pilihan Satuan:</p>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($product->activeVariants as $variant)
+                                <span class="text-[9px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-bold">
+                                    {{ $variant->unit_name }} = Rp {{ number_format($variant->price, 0, ',', '.') }}
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
+                        
+                        @if($product->activeDiscountTiers->count() > 0)
+                        <div class="bg-green-50 rounded-lg p-2 border border-green-100">
+                            <p class="text-[10px] font-bold text-green-700 mb-1">Harga Grosir:</p>
+                            <div class="flex flex-wrap gap-1">
+                                @foreach($product->activeDiscountTiers as $tier)
+                                <span class="text-[9px] bg-green-100 text-green-700 px-2 py-0.5 rounded font-bold">
+                                    {{ $tier->min_quantity }}+ = -{{ number_format($tier->discount_percentage, 0) }}%
+                                </span>
+                                @endforeach
+                            </div>
+                        </div>
+                        @endif
                     </div>
-                    @endforelse
+                </button>
+                @empty
+                <div class="bg-white rounded-2xl border border-dashed border-slate-300 py-12 text-center">
+                    <p class="text-slate-400 font-medium">Produk tidak ditemukan.</p>
+                </div>
+                @endforelse
                 </div>
                 @endif
 
@@ -75,7 +107,7 @@
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div class="flex-1">
                                         <p class="font-bold text-slate-900 leading-tight">{{ $item['product_name'] }}</p>
-                                        <p class="text-xs font-mono text-slate-400 uppercase mt-1">{{ $item['product_sku'] }}</p>
+                                        <p class="text-xs font-mono text-slate-400 uppercase mt-1">{{ $item['product_sku'] }}{{ isset($item['product_unit']) && $item['product_unit'] ? ' • ' . $item['product_unit'] : '' }}</p>
                                         
                                         @if($item['has_tier_discount'])
                                         <div class="mt-2 flex items-center text-[10px] font-bold text-green-600 uppercase tracking-tight bg-green-100 w-fit px-2 py-0.5 rounded">
@@ -245,4 +277,44 @@
             </div>
         </div>
     </div>
+
+    <!-- Variant Selection Modal -->
+    @if($selectedVariantProductId)
+    <div class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" @click.self="$wire.set('selectedVariantProductId', null)">
+        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full animate-in zoom-in-95">
+            @php
+                $product = \App\Models\Product::find($selectedVariantProductId);
+            @endphp
+            
+            <div class="px-6 py-4 border-b border-slate-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                <h3 class="text-lg font-bold text-slate-900">Pilih Satuan</h3>
+                <p class="text-sm text-slate-600 mt-1">{{ $product?->name }}</p>
+            </div>
+
+            <div class="p-6 space-y-2 max-h-96 overflow-y-auto">
+                @if($product && $product->activeVariants->count() > 0)
+                    @foreach($product->activeVariants as $variant)
+                    <button wire:click="selectVariant({{ $variant->id }})"
+                            class="w-full p-4 border-2 border-slate-200 rounded-xl text-left hover:border-blue-500 hover:bg-blue-50 transition-all flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-slate-900">{{ $variant->unit_name }}</p>
+                            <p class="text-sm text-slate-600 mt-0.5">{{ $product->name }}</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-extrabold text-blue-600 text-lg">Rp {{ number_format($variant->price, 0, ',', '.') }}</p>
+                        </div>
+                    </button>
+                    @endforeach
+                @endif
+            </div>
+
+            <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex gap-2">
+                <button wire:click="$set('selectedVariantProductId', null)"
+                        class="flex-1 px-4 py-2 border border-slate-300 rounded-lg font-bold text-slate-700 hover:bg-slate-100 transition-all">
+                    Batal
+                </button>
+            </div>
+        </div>
+    </div>
+    @endif
 </div>

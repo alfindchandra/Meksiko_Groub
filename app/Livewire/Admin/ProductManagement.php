@@ -265,26 +265,27 @@ class ProductManagement extends Component
     }
 
     public function render()
-    {
-        $query = Product::with('category')->latest();
+{
+    // Mengubah .latest() menjadi .orderBy('name', 'asc') agar urut abjad A-Z
+    $query = Product::with('category')->orderBy('name', 'asc');
 
-        if ($this->search) {
-            $query->where(function($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('sku', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        if ($this->categoryFilter) {
-            $query->where('category_id', $this->categoryFilter);
-        }
-
-        $products = $query->paginate(15);
-        $categories = Category::all();
-
-        return view('livewire.admin.data.product-management', [
-            'products' => $products,
-            'categories' => $categories,
-        ])->layout('layouts.app');
+    if ($this->search) {
+        $query->where(function($q) {
+            $q->where('name', 'like', '%' . $this->search . '%')
+              ->orWhere('sku', 'like', '%' . $this->search . '%');
+        });
     }
+
+    if ($this->categoryFilter) {
+        $query->where('category_id', $this->categoryFilter);
+    }
+
+    $products = $query->paginate(20);
+    $categories = Category::all();
+
+    return view('livewire.admin.data.product-management', [
+        'products' => $products,
+        'categories' => $categories,
+    ])->layout('layouts.app');
+}
 }

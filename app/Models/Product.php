@@ -61,4 +61,16 @@ public function activeDiscountTiers(): HasMany
         ->where('is_active', true)
         ->orderBy('min_quantity', 'asc');
 }
+
+public function variants(): HasMany
+{
+    return $this->hasMany(ProductVariant::class);
+}
+
+public function activeVariants(): HasMany
+{
+    return $this->hasMany(ProductVariant::class)
+        ->where('is_active', true)
+        ->orderBy('sort_order', 'asc');
+}
 }

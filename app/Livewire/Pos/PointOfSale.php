@@ -22,6 +22,8 @@ class PointOfSale extends Component
     public $globalDiscount = 0;
     public $tax = 0;
     public $notes = '';
+    public $selectedVariantProductId = null;
+    public $selectedVariantId = null;
 
     public function mount()
     {
@@ -30,10 +32,17 @@ class PointOfSale extends Component
         }
     }
 
-    public function addToCart($productId)
+    public function addToCart($productId, $variantId = null)
     {
-        $product = Product::with('activeDiscountTiers')->find($productId);
+        $product = Product::with('activeVariants', 'activeDiscountTiers')->find($productId);
         if (!$product) return;
+
+        // If product has variants and no variant selected, show variant selector
+        if ($product->activeVariants->count() > 0 && !$variantId) {
+            $this->selectedVariantProductId = $productId;
+            $this->dispatch('show-variant-modal');
+            return;
+        }
 
         $stock = Stock::where('product_id', $productId)
             ->where('outlet_id', auth()->user()->outlet_id)
@@ -47,9 +56,24 @@ class PointOfSale extends Component
             return;
         }
 
+        // Get variant info if selected
+        $variant = null;
+        $unitPrice = (float)$product->price;
+        $productUnit = $product->unit;
+        
+        if ($variantId) {
+            $variant = \App\Models\ProductVariant::find($variantId);
+            if ($variant) {
+                $unitPrice = (float)$variant->price;
+                $productUnit = $variant->unit_name;
+            }
+        }
+
+        $cartKey = $variantId ? "product_{$productId}_variant_{$variantId}" : "product_{$productId}";
+
         $found = false;
         foreach ($this->cart as $index => $item) {
-            if ((int)$item['product_id'] === (int)$productId) {
+            if ($item['cart_key'] === $cartKey) {
                 if ((int)$this->cart[$index]['quantity'] >= (int)$stock->quantity) {
                     $this->dispatch('notify', [
                         'type' => 'error',
@@ -66,20 +90,24 @@ class PointOfSale extends Component
 
         if (!$found) {
             $this->cart[] = [
+                'cart_key' => $cartKey,
                 'product_id' => (int)$product->id,
+                'variant_id' => $variantId,
                 'product_name' => $product->name,
                 'product_sku' => $product->sku,
-                'unit_price' => (float)$product->price,
+                'product_unit' => $productUnit,
+                'unit_price' => $unitPrice,
                 'quantity' => 1,
                 'available_stock' => (int)$stock->quantity,
                 'item_discount_percentage' => 0,
                 'item_discount_amount' => 0,
-                'subtotal' => (float)$product->price,
+                'subtotal' => $unitPrice,
                 'has_tier_discount' => $product->activeDiscountTiers->count() > 0,
             ];
         }
 
         $this->searchProduct = '';
+        $this->selectedVariantProductId = null;
     }
 
     public function removeFromCart($index)
@@ -151,6 +179,21 @@ class PointOfSale extends Component
             return 0;
         }
         return max(0, (float)$this->paidAmount - (float)$this->total);
+    }
+
+    public function selectVariant($variantId)
+    {
+        if ($this->selectedVariantProductId) {
+            $this->addToCart($this->selectedVariantProductId, $variantId);
+            $this->selectedVariantProductId = null;
+        }
+    }
+
+    public function getVariantsForProduct($productId)
+    {
+        $product = Product::find($productId);
+        if (!$product) return collect();
+        return $product->activeVariants;
     }
 
     public function checkout()

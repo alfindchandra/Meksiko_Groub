@@ -20,12 +20,25 @@ class Audit extends Model
         'status',
         'proof_of_payment',
         'payment_amount',
+        'deposit_amount',
+        'deposit_date',
+        'deposit_status',
+        'shortage_amount',
+        'sold_items_count',
+        'sold_amount',
+        'sold_status',
     ];
 
     protected $casts = [
         'audited_at'      => 'datetime',
+        'deposit_date'    => 'datetime',
         'system_quantity' => 'integer',
         'physical_quantity' => 'integer',
+        'sold_items_count' => 'integer',
+        'payment_amount'   => 'decimal:2',
+        'deposit_amount'   => 'decimal:2',
+        'shortage_amount'  => 'decimal:2',
+        'sold_amount'      => 'decimal:2',
     ];
 
     // Relationships

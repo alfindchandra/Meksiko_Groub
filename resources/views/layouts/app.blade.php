@@ -33,7 +33,7 @@
     </div>
 </div>
 
-    @include('livewire.components.notifications')
+
     @livewireScripts
     @stack('scripts')
 </body>

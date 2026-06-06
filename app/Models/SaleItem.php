@@ -8,14 +8,14 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class SaleItem extends Model
 {
     protected $fillable = [
-        'sale_id', 'product_id', 'quantity',
-        'unit_price', 'discount', 'subtotal',
+        'sale_id', 'product_id', 'variant_id', 'quantity',
+        'unit_price', 'unit_name', 'discount', 'subtotal',
     ];
 
     protected $casts = [
         'unit_price' => 'decimal:2',
-        'discount' => 'decimal:2',
-        'subtotal' => 'decimal:2',
+        'discount'   => 'decimal:2',
+        'subtotal'   => 'decimal:2',
     ];
 
     public function sale(): BelongsTo
@@ -26,5 +26,10 @@ class SaleItem extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function variant(): BelongsTo
+    {
+        return $this->belongsTo(ProductVariant::class);
     }
 }

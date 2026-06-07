@@ -82,7 +82,7 @@ class ProductManagement extends Component
         $this->description = $product->description ?? '';
         $this->category_id = $product->category_id;
         $this->unit        = $product->unit;
-        $this->price       = $product->price;
+        $this->price = number_format($product->price, 0, ',', '.');
         $this->min_stock   = $product->min_stock;
         $this->is_active   = $product->is_active;
         $this->editMode    = true;
@@ -99,7 +99,7 @@ class ProductManagement extends Component
             'description' => trim($this->description) ?: null,
             'category_id' => $this->category_id,
             'unit'        => $this->unit,
-            'price'       => (float) $this->price,
+            'price' => (int) str_replace('.', '', $this->price),
             'min_stock'   => (int) $this->min_stock,
             'is_active'   => $this->is_active,
         ];

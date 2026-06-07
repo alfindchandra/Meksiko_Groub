@@ -195,7 +195,7 @@ class AuditorPos extends Component
         $lines = [];
         $lines[] = "📋 LAPORAN BARANG LAKU SAAT SO";
         $lines[] = "Cabang: {$outletLabel}";
-        $lines[] = "Tanggal: " . now()->format('d M Y H:i');
+        $lines[] = "Tanggal: " . now()->translatedFormat('d F Y');
         $lines[] = str_repeat("-", 35);
 
         foreach ($this->cart as $i => $item) {
@@ -221,9 +221,13 @@ class AuditorPos extends Component
             } elseif ($this->lebih > 0) {
                 $lines[] = "LEBIH  : Rp " . number_format($this->lebih, 0, ',', '.');
             } else {
-                $lines[] = "STATUS : LUNAS ✅";
+                $lines[] = "DONE";
             }
         }
+        $lines[] = "@MAS APAN MEKSIKO";
+        $lines[] = "@dita Kemsiko Admin";
+        $lines[] = "@~Faaadly_";
+        $lines[] = "@~revaa";
 
         $this->summaryText = implode("\n", $lines);
     }

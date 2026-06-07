@@ -2,12 +2,12 @@
     @section('page-title', 'POS Auditor')
 
     {{-- Top Bar --}}
-    <div class="sticky top-0 z-50 bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
+    <div class=" bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-3">
             <div class="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>
             <span class="text-slate-800 text-xs font-black tracking-widest uppercase">Auditor POS</span>
         </div>
-        <span class="text-slate-400 font-mono text-xs">{{ now()->format('D, d M Y') }}</span>
+        <span class="text-slate-400 font-mono text-xs">{{ now()->translatedFormat('l, d F Y') }}</span>
     </div>
 
     <div class="max-w-[1600px] mx-auto p-4 lg:p-6">

@@ -177,7 +177,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 
     // Admin Data Management
-    Route::prefix('admin')->name('admin.')->middleware('can:manage-users')->group(function () {
+    Route::prefix('admin')->name('admin.')->middleware('can:manage-audit')->group(function () {
         Route::get('/users', UserManagement::class)->name('data.users');
         Route::get('/audit-payments', \App\Livewire\Admin\AuditPaymentConfirmation::class)->name('data.audit-payments');
         Route::get('/products', \App\Livewire\Admin\ProductManagement::class)->name('data.products');

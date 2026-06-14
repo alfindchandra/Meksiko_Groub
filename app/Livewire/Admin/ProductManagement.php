@@ -26,7 +26,7 @@ class ProductManagement extends Component
     public $name        = '';
     public $description = '';
     public $category_id = '';
-    public $unit        = 'btl';
+    public $unit        = 'botol';
     public $price       = 0;
     public $min_stock   = 0;
     public $is_active   = true;
@@ -137,7 +137,7 @@ class ProductManagement extends Component
         $this->name        = '';
         $this->description = '';
         $this->category_id = '';
-        $this->unit        = 'btl';
+        $this->unit        = 'botol';
         $this->price       = 0;
         $this->min_stock   = 0;
         $this->is_active   = true;

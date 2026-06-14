@@ -54,6 +54,7 @@
     </a>
     @endif
 
+    @can('view-users')
     <div x-data="{ open: {{ request()->routeIs('stock.*') ? 'true' : 'false' }} }">
         <button
             @click="{{ !$isMobile ? 'sidebarMinimized ? sidebarMinimized = false : open = !open' : 'open = !open' }}"
@@ -92,7 +93,10 @@
             @endcan
         </div>
     </div>
+    @endcan
 
+
+    @can('view-users')
     <div x-data="{ open: {{ request()->routeIs('transfer.*') ? 'true' : 'false' }} }">
         <button
             @click="{{ !$isMobile ? 'sidebarMinimized ? sidebarMinimized = false : open = !open' : 'open = !open' }}"
@@ -123,7 +127,7 @@
                 Daftar Transaksi
             </a>
             @endcan
-            @can('manage-audit')
+            @can('manage-users')
             <a href="{{ route('transfer.list') }}"
                 class="block px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('transfer.list') ? 'bg-primary-50 text-primary-700' : 'text-gray-600 hover:bg-gray-50' }}">
                 Daftar Transfer
@@ -136,7 +140,9 @@
             @endcan
         </div>
     </div>
+    @endcan
 
+    @can('view-users')
     <a href="{{ route('shipment.list') }}"
         class="flex items-center px-3 py-2 text-sm font-medium transition-all duration-200 rounded-xl group
                   {{ request()->routeIs('shipment.*') ? 'bg-primary-100 text-slate-600' : 'text-gray-700 hover:bg-gray-100' }}">
@@ -149,8 +155,9 @@
         </svg>
         <span x-show="{{ $isMobile ? 'true' : '!sidebarMinimized' }}" class="truncate">Pelacakan Pengiriman</span>
     </a>
+    @endcan
 
-    @can('manage-audit')
+    @can('manage-users')
     <div x-data="{ open: {{ request()->routeIs('audit.*') ? 'true' : 'false' }} }">
         <button
             @click="{{ !$isMobile ? 'sidebarMinimized ? sidebarMinimized = false : open = !open' : 'open = !open' }}"
@@ -171,7 +178,7 @@
             </svg>
         </button>
         <div x-show="open && {{ $isMobile ? 'true' : '!sidebarMinimized' }}" x-collapse class="mt-1 ml-8 space-y-1">
-            @can('manage-audit')
+            @can('manage-users')
             <a href="{{ route('audit.create') }}"
                 class="block px-3 py-2 text-xs font-medium rounded-lg transition-colors {{ request()->routeIs('audit.create') ? 'text-primary-700 bg-primary-50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50' }}">
                 Buat Audit
@@ -191,7 +198,7 @@
     </div>
     @endcan
 
-    @can('manage-users')
+    @can('manage-audit')
     <div
         x-data="{ open: {{ request()->routeIs('admin.data.*') || request()->routeIs('permissions.*') ? 'true' : 'false' }} }">
         <button
